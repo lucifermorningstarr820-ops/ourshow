@@ -1,52 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Community Chat | OurShow</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="firebase-config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat - OurShow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            min-height: 100vh;
+        }
+        .chat-container {
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .message-bubble {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .scroll-shadow {
+            box-shadow: 0 -10px 20px -10px rgba(0, 0, 0, 0.3) inset;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white font-sans flex flex-col min-h-screen">
+<body class="text-gray-100">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                        OurShow
+                    </a>
+                    <span class="text-gray-400">|</span>
+                    <h1 class="text-xl font-semibold text-gray-200">💬 Community Chat</h1>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
+                    ← Back
+                </a>
+            </div>
+        </div>
+    </header>
 
-  <!-- Header -->
-  <header class="flex items-center justify-between p-4 bg-gray-800 shadow-md">
-    <h1 class="text-3xl font-bold cursor-pointer select-none" onclick="window.location.href='index.html'">
-      <span class="bg-white text-black px-2 py-1 rounded">Our</span>
-      <span class="text-red-500">Show</span>
-    </h1>
-    <button onclick="window.location.href='index.html'" class="text-red-500 hover:underline">‹ Back to Home</button>
-  </header>
+    <!-- Main Chat Container -->
+    <div class="container mx-auto px-4 py-6 max-w-5xl">
+        <div class="chat-container rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+            <!-- Chat Info Bar -->
+            <div class="bg-gray-800/50 px-6 py-3 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm text-gray-300"><span id="online-count">0</span> online</span>
+                    </div>
+                    <div id="typing-status" class="text-sm text-indigo-400 italic min-h-[20px]"></div>
+                </div>
+            </div>
 
-  <!-- Chat Container -->
-  <main class="flex-1 flex flex-col max-w-3xl mx-auto w-full p-4">
-    <h2 class="text-2xl font-semibold mb-4 text-center">🌐 Global Community Chat</h2>
+            <!-- Messages Display Area -->
+            <div id="chat-display" class="h-[500px] overflow-y-auto p-6 space-y-4 scroll-shadow">
+                <!-- Messages will be inserted here -->
+                <div class="text-center text-gray-500 text-sm">
+                    Welcome to the community chat! Start the conversation...
+                </div>
+            </div>
 
-    <!-- Chat Box -->
-    <div id="chat-box" class="flex-1 overflow-y-auto bg-gray-800 p-4 rounded-lg shadow-inner space-y-3 border border-gray-700"></div>
+            <!-- Message Input Area -->
+            <div class="bg-gray-800/50 p-4 border-t border-gray-700">
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Type your message..." 
+                        class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+                        maxlength="500"
+                    >
+                    <button 
+                        id="send-btn" 
+                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Send
+                    </button>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 flex justify-between">
+                    <span id="char-count">0/500</span>
+                    <span>Press Enter to send</span>
+                </div>
+            </div>
+        </div>
 
-    <!-- Message Form -->
-    <div class="mt-4 flex space-x-2">
-      <input id="message-input" type="text" placeholder="Type a message..."
-        class="flex-1 p-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500" />
-      <button id="send-btn"
-        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-medium transition">Send</button>
+        <!-- Chat Guidelines -->
+        <div class="mt-6 bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+            <h3 class="font-semibold text-sm mb-2 text-gray-300">💡 Chat Guidelines</h3>
+            <ul class="text-xs text-gray-400 space-y-1">
+                <li>• Be respectful and kind to everyone</li>
+                <li>• No spam, advertising, or offensive content</li>
+                <li>• Keep discussions related to movies and TV shows</li>
+                <li>• Have fun and make new friends!</li>
+            </ul>
+        </div>
     </div>
-  </main>
 
-  <!-- Name Modal -->
-  <div id="name-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-    <div class="bg-gray-800 p-6 rounded-lg w-80 text-center">
-      <h3 class="text-xl font-semibold mb-4">Enter your name</h3>
-      <input id="name-input" type="text" placeholder="Your name..."
-        class="w-full p-2 rounded-md bg-gray-700 text-white mb-4 focus:outline-none focus:ring-2 focus:ring-red-500" />
-      <button id="save-name"
-        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-medium transition">Continue</button>
+    <!-- Username Modal -->
+    <div id="name-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-700 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                Welcome to Chat!
+            </h2>
+            <p class="text-gray-400 mb-6">Choose a username to get started</p>
+            <input 
+                type="text" 
+                id="username-input" 
+                placeholder="Enter your username" 
+                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 mb-4"
+                maxlength="20"
+            >
+            <button 
+                id="save-username" 
+                class="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition"
+            >
+                Join Chat
+            </button>
+        </div>
     </div>
-  </div>
 
-  <script src="community.js" type="module"></script>
+    <script type="module" src="community.js"></script>
 </body>
 </html>
