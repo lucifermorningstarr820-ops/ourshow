@@ -126,11 +126,93 @@
 
   <!-- Auth Gate: Check if user is logged in or guest -->
   <script type="module">
-    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
-
-    const auth = window.authMod || getAuth();
+  // STEP 1: Wait for Firebase to initialize
+  import { waitForFirebase } from './firebase-config.js';
+  
+  console.log('⏳ Checking authentication...');
+  
+  try {
+    // Wait for Firebase to be ready
+    await waitForFirebase();
+    
+    // STEP 2: Import auth modules
+    const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+    
+    const auth = window.authMod;
     const isGuest = localStorage.getItem('ourshow_guest') === 'true';
 
+    // STEP 3: Check auth state
+    onAuthStateChanged(auth, (user) => {
+      console.log('👤 User:', user ? user.email : 'Not logged in', '| Guest:', isGuest);
+      
+      if (!user && !isGuest) {
+        // Not logged in and not guest - redirect to login
+        console.log('🚫 No auth - redirecting to login...');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Gate features based on auth
+      window.isAuthenticated = !!user;
+      window.currentUser = user;
+
+      // Hide/disable guest-restricted features
+      if (!user) {
+        // Guest mode - disable Posts, Community, AI
+        const postLink = document.querySelector('a[href="post.html"]');
+        const communityLink = document.querySelector('a[href="community.html"]');
+        const aiLink = document.querySelector('a[href="ai.html"]');
+        const aiBanner = document.getElementById('ai-banner');
+
+        if (postLink) postLink.style.opacity = '0.5';
+        if (communityLink) communityLink.style.opacity = '0.5';
+        if (aiLink) aiLink.style.opacity = '0.5';
+        if (aiBanner) aiBanner.style.opacity = '0.5';
+
+        // Show warning on restricted pages
+        const restrictedPages = ['post.html', 'community.html', 'ai.html'];
+        if (restrictedPages.some(p => window.location.pathname.includes(p))) {
+          alert('⚠️ This feature requires login. Please sign in to continue.');
+          window.location.href = 'login.html';
+        }
+      }
+
+      // Update profile button
+      const profileName = document.getElementById('profile-name');
+      const profilePic = document.getElementById('profile-pic');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      if (user) {
+        profileName.textContent = user.displayName || 'User';
+        if (user.photoURL) profilePic.src = user.photoURL;
+        
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async () => {
+            await auth.signOut();
+            localStorage.removeItem('ourshow_guest');
+            window.location.href = 'login.html';
+          });
+        }
+      } else if (isGuest) {
+        profileName.textContent = 'Guest';
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('ourshow_guest');
+            window.location.href = 'login.html';
+          });
+        }
+      }
+    });
+    
+  } catch (err) {
+    console.error('❌ Firebase auth check failed:', err);
+    // If Firebase fails, still allow access as guest
+    const isGuest = localStorage.getItem('ourshow_guest') === 'true';
+    if (!isGuest) {
+      window.location.href = 'login.html';
+    }
+  }
+</script>
     // Check auth state
     onAuthStateChanged(auth, (user) => {
       if (!user && !isGuest) {
