@@ -224,13 +224,31 @@ async function listenToMessages() {
         const messagesRef = query(ref(dbMod, 'globalChat'), limitToLast(50));
         const username = getUsername();
         
+        let isInitialLoad = true;
+        const displayedMessages = new Set();
+        
         onChildAdded(messagesRef, (snapshot) => {
             const message = snapshot.val();
-            if (message) {
+            const messageKey = snapshot.key;
+            
+            if (message && !displayedMessages.has(messageKey)) {
+                displayedMessages.add(messageKey);
                 const isOwn = message.username === username;
                 displayMessage(message, isOwn);
+                
+                // Auto-scroll only on new messages (not initial load)
+                if (!isInitialLoad) {
+                    const chatDisplay = document.getElementById('chat-display');
+                    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+                }
             }
         });
+        
+        // After initial messages loaded, enable auto-scroll
+        setTimeout(() => {
+            isInitialLoad = false;
+        }, 1000);
+        
     } catch (error) {
         console.error('❌ Error listening to messages:', error);
         loadFromLocalStorage();
