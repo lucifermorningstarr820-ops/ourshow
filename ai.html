@@ -2,208 +2,284 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Recommender | OurShow</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Firebase (shared config) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+  <script src="config.js"></script>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-gray-900 text-white font-sans min-h-screen">
 
   <!-- Header -->
-  <header class="bg-gray-800 p-4 flex justify-between items-center shadow-md">
-    <h1 onclick="location.href='index.html'" class="cursor-pointer text-3xl font-bold">
-      <span class="bg-white text-black px-2 py-1 rounded">Our</span>
-      <span class="text-red-500">Show</span>
-    </h1>
-
-    <button onclick="location.href='index.html'" 
-      class="bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700">
-      ← Back to Home
-    </button>
+  <header class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 shadow-xl p-4 sticky top-0 z-50 border-b border-purple-600/30">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 hover:scale-105 transition-transform">
+        <div class="bg-gradient-to-br from-purple-600 to-purple-700 px-3 py-2 rounded-lg">
+          <span class="text-white font-extrabold text-lg">🤖</span>
+        </div>
+        <div>
+          <div class="text-2xl font-extrabold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+            AI Recommender
+          </div>
+          <div class="text-xs text-gray-400">Powered by Google Gemini</div>
+        </div>
+      </a>
+      <a href="index.html" class="text-sm text-gray-400 hover:text-white transition">← Back Home</a>
+    </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="p-6 space-y-10">
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto p-6 space-y-6">
 
-    <!-- Title -->
-    <h2 class="text-3xl font-bold text-center">🎬 AI Movie & Series Recommender</h2>
+    <!-- Welcome Card -->
+    <div class="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 rounded-xl p-6">
+      <h1 class="text-3xl font-bold mb-2">🎬 What should I watch?</h1>
+      <p class="text-gray-300">Tell me your mood, favorite genre, or an actor you love, and I'll recommend the perfect movie or show!</p>
+    </div>
 
-    <!-- Mood Recommender -->
-    <section class="bg-gray-800 p-5 rounded-xl shadow-lg">
-      <h3 class="text-xl font-semibold mb-3">💛 Mood Based Recommendation</h3>
-
-      <select id="mood-select" class="w-full bg-gray-700 p-3 rounded">
-        <option value="">Select your mood</option>
-        <option>Happy</option>
-        <option>Sad</option>
-        <option>Romantic</option>
-        <option>Thrilling</option>
-        <option>Dark</option>
-        <option>Funny</option>
-        <option>Motivational</option>
-      </select>
-
-      <button onclick="aiMood()" class="mt-4 bg-red-600 px-4 py-2 rounded hover:bg-red-700">
-        Recommend 🎯
+    <!-- Quick Suggestions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <button class="quick-btn bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 p-3 rounded-lg transition-all" data-prompt="I'm feeling adventurous">
+        🗺️ Adventure
       </button>
-
-      <p id="mood-result" class="mt-3 text-gray-300"></p>
-    </section>
-
-    <!-- Genre -->
-    <section class="bg-gray-800 p-5 rounded-xl shadow-lg">
-      <h3 class="text-xl font-semibold mb-3">🎭 Genre Based Recommendation</h3>
-
-      <input id="genre-input" type="text" placeholder="e.g. horror, sci-fi, crime thriller..."
-             class="w-full bg-gray-700 p-3 rounded">
-
-      <button onclick="aiGenre()" class="mt-4 bg-red-600 px-4 py-2 rounded hover:bg-red-700">
-        Recommend 🎬
+      <button class="quick-btn bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 p-3 rounded-lg transition-all" data-prompt="I want something scary">
+        😱 Horror
       </button>
-
-      <p id="genre-result" class="mt-3 text-gray-300"></p>
-    </section>
-
-    <!-- Full AI chat -->
-    <section class="bg-gray-800 p-5 rounded-xl shadow-lg">
-      <h3 class="text-xl font-semibold mb-3">🤖 Ask AI Anything</h3>
-
-      <textarea id="ai-query" class="w-full bg-gray-700 p-3 rounded h-24"
-        placeholder="Recommend a dark psychological thriller like Shutter Island"></textarea>
-
-      <button onclick="aiFreeSearch()" class="mt-4 bg-red-600 px-4 py-2 rounded hover:bg-red-700">
-        Generate 🔥
+      <button class="quick-btn bg-pink-600/20 hover:bg-pink-600/40 border border-pink-500/30 p-3 rounded-lg transition-all" data-prompt="I'm in the mood for romance">
+        💕 Romance
       </button>
+      <button class="quick-btn bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/30 p-3 rounded-lg transition-all" data-prompt="Make me laugh">
+        😂 Comedy
+      </button>
+      <button class="quick-btn bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/30 p-3 rounded-lg transition-all" data-prompt="I want mind-bending sci-fi">
+        🚀 Sci-Fi
+      </button>
+      <button class="quick-btn bg-green-600/20 hover:bg-green-600/40 border border-green-500/30 p-3 rounded-lg transition-all" data-prompt="Something emotional and deep">
+        🎭 Drama
+      </button>
+      <button class="quick-btn bg-orange-600/20 hover:bg-orange-600/40 border border-orange-500/30 p-3 rounded-lg transition-all" data-prompt="Action-packed thriller">
+        💥 Action
+      </button>
+      <button class="quick-btn bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 p-3 rounded-lg transition-all" data-prompt="Mystery to solve">
+        🔍 Mystery
+      </button>
+    </div>
 
-      <p class="mt-3 text-gray-300">AI Output:</p>
-      <div id="ai-output" class="mt-3 bg-gray-700 p-4 rounded text-sm whitespace-pre-wrap"></div>
-    </section>
-
-
-    <!-- TMDB Results -->
-    <section>
-      <h3 class="text-xl font-semibold mb-3">🔎 Recommended Titles</h3>
-      <div id="recommend-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        <!-- cards injected here -->
+    <!-- Input Area -->
+    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+      <label class="block text-sm font-semibold mb-3">✨ Or describe what you're looking for:</label>
+      <textarea id="user-input" 
+                class="w-full p-4 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50 outline-none transition-all resize-none" 
+                rows="4" 
+                placeholder="Examples:
+• I'm feeling nostalgic, something from the 90s
+• Movies like Inception with Leonardo DiCaprio
+• A feel-good family movie for tonight
+• Dark psychological thriller with plot twists"></textarea>
+      
+      <div class="flex items-center gap-3 mt-4">
+        <button id="ask-btn" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+          <span>✨</span>
+          <span>Get Recommendations</span>
+        </button>
+        <button id="clear-btn" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all">
+          Clear
+        </button>
       </div>
-    </section>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden text-center py-8">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+      <p class="mt-4 text-gray-400">AI is thinking... 🤔</p>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="space-y-4"></div>
+
+    <!-- Examples Section -->
+    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+      <h3 class="text-lg font-semibold mb-3">💡 Pro Tips:</h3>
+      <ul class="space-y-2 text-gray-400 text-sm">
+        <li>🎯 <strong>Be specific:</strong> "Sci-fi movies like Interstellar" works better than just "movies"</li>
+        <li>🎭 <strong>Mention actors:</strong> "Something with Tom Hanks" or "Movies starring Margot Robbie"</li>
+        <li>😊 <strong>Describe your mood:</strong> "I'm feeling down, need something uplifting"</li>
+        <li>📅 <strong>Mention eras:</strong> "Classic 80s action films" or "Recent 2023 releases"</li>
+        <li>🌍 <strong>Try genres:</strong> K-dramas, anime, Bollywood, documentaries, etc.</li>
+      </ul>
+    </div>
 
   </main>
 
+  <script type="module">
+    import { waitForFirebase } from './firebase-config.js';
+    
+    // Wait for Firebase and check auth
+    try {
+      await waitForFirebase();
+      const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+      const auth = window.authMod;
+      
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          alert('⚠️ AI Recommender requires login. Please sign in to continue.');
+          window.location.href = 'login.html';
+        }
+      });
+    } catch (err) {
+      console.error('Auth check failed:', err);
+      alert('⚠️ Please login to use AI features');
+      window.location.href = 'login.html';
+    }
+  </script>
 
-  <!-- Shared Firebase Config -->
-  <script src="firebase-config.js"></script>
-
-  <!-- Shared TMDB + card logic -->
-  <script src="prototype.js"></script>
-
-  <!-- Gemini AI Logic -->
   <script>
-    const GEMINI_API_KEY = "AIzaSyATdHM8g689rEeFkpShnFTBOfv7jH_RgxA";
+    const userInput = document.getElementById('user-input');
+    const askBtn = document.getElementById('ask-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const quickBtns = document.querySelectorAll('.quick-btn');
 
-    async function gemini(prompt) {
+    // Quick button handlers
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        userInput.value = btn.dataset.prompt;
+        getRecommendations();
+      });
+    });
+
+    // Main ask button
+    askBtn.addEventListener('click', getRecommendations);
+
+    // Clear button
+    clearBtn.addEventListener('click', () => {
+      userInput.value = '';
+      results.innerHTML = '';
+    });
+
+    // Enter key to submit
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        getRecommendations();
+      }
+    });
+
+    async function getRecommendations() {
+      const prompt = userInput.value.trim();
+      
+      if (!prompt) {
+        alert('Please describe what you want to watch!');
+        return;
+      }
+
+      // Show loading
+      loading.classList.remove('hidden');
+      results.innerHTML = '';
+      askBtn.disabled = true;
+      askBtn.innerHTML = '<span class="animate-pulse">Thinking...</span>';
+
       try {
-        const res = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }]}],
-            })
-          }
-        );
+        // Build AI prompt
+        const aiPrompt = `You are a movie and TV show expert. A user wants recommendations based on: "${prompt}"
 
-        const json = await res.json();
-        return json?.candidates?.[0]?.content?.parts?.[0]?.text || "AI didn't return anything.";
-      } catch (err) {
-        return "⚠ Gemini API error: " + err.message;
+Please recommend EXACTLY 5 movies or TV shows. For each recommendation, provide:
+1. Title
+2. Year
+3. One short sentence explaining why it matches their request
+4. Genre
+
+Format your response EXACTLY like this example:
+1. Inception (2010) - Mind-bending sci-fi thriller perfect for your request | Sci-Fi/Thriller
+2. The Matrix (1999) - Revolutionary action with deep philosophical themes | Sci-Fi/Action
+
+Keep each description to ONE sentence. Be concise and helpful.`;
+
+        // Call Gemini API
+        const aiResponse = await geminiCall(aiPrompt);
+        
+        if (!aiResponse) {
+          throw new Error('AI did not respond');
+        }
+
+        // Parse and display results
+        displayResults(aiResponse, prompt);
+
+      } catch (error) {
+        console.error('AI Error:', error);
+        results.innerHTML = `
+          <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
+            <p class="text-xl mb-2">😔 Oops!</p>
+            <p class="text-gray-300">Something went wrong with the AI. Please try again!</p>
+            <p class="text-sm text-gray-500 mt-2">Error: ${error.message}</p>
+          </div>
+        `;
+      } finally {
+        loading.classList.add('hidden');
+        askBtn.disabled = false;
+        askBtn.innerHTML = '<span>✨</span><span>Get Recommendations</span>';
       }
     }
 
-    // Mood Recommendation
-    async function aiMood() {
-      const mood = document.getElementById("mood-select").value;
-      if (!mood) return alert("Select a mood!");
+    function displayResults(aiText, originalPrompt) {
+      // Parse AI response
+      const lines = aiText.split('\n').filter(line => line.trim());
+      
+      let html = `
+        <div class="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-xl p-6">
+          <h2 class="text-2xl font-bold mb-2">🎬 Here's what I recommend:</h2>
+          <p class="text-gray-400 text-sm mb-4">Based on: "${originalPrompt}"</p>
+          <div class="space-y-3">
+      `;
 
-      document.getElementById("mood-result").textContent = "⏳ AI thinking...";
-
-      const reply = await gemini(
-        `Recommend 10 movies or series for someone who is feeling "${mood}". Provide only TMDB searchable titles in a clean list.`
-      );
-
-      document.getElementById("mood-result").textContent = reply;
-      parseAIResults(reply);
-    }
-
-    // Genre Recommendation
-    async function aiGenre() {
-      const genre = document.getElementById("genre-input").value.trim();
-      if (!genre) return alert("Enter a genre!");
-
-      document.getElementById("genre-result").textContent = "⏳ AI thinking...";
-
-      const reply = await gemini(
-        `Recommend 10 "${genre}" movies or series. Provide only TMDB searchable titles in a clean list.`
-      );
-
-      document.getElementById("genre-result").textContent = reply;
-      parseAIResults(reply);
-    }
-
-    // Free Text Query
-    async function aiFreeSearch() {
-      const q = document.getElementById("ai-query").value.trim();
-      if (!q) return alert("Ask something!");
-
-      document.getElementById("ai-output").textContent = "⏳ AI thinking...";
-
-      const reply = await gemini(
-        `${q}. Provide only TMDB searchable titles in a clean list.`
-      );
-
-      document.getElementById("ai-output").textContent = reply;
-      parseAIResults(reply);
-    }
-
-    /** Extract movie names from AI response and search TMDB */
-    async function parseAIResults(aiText) {
-      const lines = aiText.split("\n").filter(x =>
-        x.trim() &&
-        isNaN(x.trim()) &&
-        x.length > 2
-      );
-
-      document.getElementById("recommend-container").innerHTML = "";
-
-      for (let line of lines) {
-        const name = line.replace(/^\d+\.\s*/, "").trim();
-        if (name.length < 2) continue;
-        searchTMDB(name);
+      let count = 0;
+      for (const line of lines) {
+        // Match pattern like: 1. Title (Year) - Description | Genre
+        const match = line.match(/^\d+\.\s*(.+?)\s*\((\d{4})\)\s*-\s*(.+?)\s*\|\s*(.+)$/);
+        
+        if (match && count < 5) {
+          const [, title, year, description, genre] = match;
+          count++;
+          
+          html += `
+            <div class="bg-gray-800/50 rounded-lg p-4 hover:bg-gray-800 transition-all cursor-pointer border border-gray-700/50 hover:border-purple-500/50" onclick="searchMovie('${title.replace(/'/g, "\\'")}')">
+              <div class="flex items-start gap-3">
+                <div class="text-2xl">${count}</div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-lg text-purple-400">${title} <span class="text-gray-500 text-sm">(${year})</span></h3>
+                  <p class="text-gray-300 text-sm mt-1">${description}</p>
+                  <div class="flex gap-2 mt-2">
+                    <span class="text-xs bg-purple-600/30 px-2 py-1 rounded">${genre}</span>
+                    <span class="text-xs text-gray-500">Click to search on main site →</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
       }
+
+      html += `
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <button onclick="getRecommendations()" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all">
+            🔄 Get New Recommendations
+          </button>
+        </div>
+      `;
+
+      results.innerHTML = html;
     }
 
-    /** TMDB search + card display */
-    async function searchTMDB(query) {
-      try {
-        const url = `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}`;
-        const res = await fetch(url);
-        const json = await res.json();
-        const item = json.results?.[0];
-        if (!item) return;
-
-        const container = document.getElementById("recommend-container");
-        container.insertAdjacentHTML("beforeend", makeCard(item, item.media_type || "movie"));
-      } catch (err) {
-        console.log("TMDB search error:", err);
-      }
+    function searchMovie(title) {
+      // Redirect to main page with search query
+      window.location.href = `index.html?search=${encodeURIComponent(title)}`;
     }
+
+    // Global function for inline onclick
+    window.searchMovie = searchMovie;
+    window.getRecommendations = getRecommendations;
   </script>
 
 </body>
