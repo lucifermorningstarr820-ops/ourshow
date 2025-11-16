@@ -2,8 +2,8 @@
 let dbMod, authMod;
 let firebaseReady = false;
 let currentUser = null;
-let currentPostId = null; // For comment modal
-let deletePostId = null; // For delete confirmation
+let currentPostId = null;
+let deletePostId = null;
 
 // Wait for Firebase to be initialized
 async function initFirebase() {
@@ -32,7 +32,6 @@ async function initFirebase() {
             firebaseReady = true;
             console.log('✅ Firebase initialized for posts');
             
-            // Get current user
             const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
             onAuthStateChanged(authMod, (user) => {
                 currentUser = user;
@@ -43,7 +42,7 @@ async function initFirebase() {
             throw new Error('Firebase not available');
         }
     } catch (error) {
-        console.warn('⚠️ Firebase unavailable, using localStorage fallback');
+        console.warn('⚠️ Firebase unavailable:', error);
         firebaseReady = false;
     }
 }
@@ -95,7 +94,6 @@ function createPostHtml(post, postId) {
     
     return `
         <div class="post-card bg-gray-900/95 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-800 shadow-lg" data-post-id="${postId}">
-            <!-- Post Header -->
             <div class="flex items-start gap-3 mb-4">
                 <img src="${avatar}" alt="${escapeHtml(post.author)}" 
                      class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-indigo-500/30 flex-shrink-0"
@@ -116,13 +114,9 @@ function createPostHtml(post, postId) {
                     </div>
                 </div>
             </div>
-
-            <!-- Post Content -->
             <div class="mb-4">
                 <p class="text-sm sm:text-base text-gray-200 whitespace-pre-wrap break-words">${escapeHtml(post.content)}</p>
             </div>
-
-            <!-- Post Actions -->
             <div class="flex items-center gap-4 sm:gap-6 pt-3 border-t border-gray-800">
                 <button class="like-btn flex items-center gap-2 text-gray-400 hover:text-red-500 transition ${isLiked ? 'liked text-red-500' : ''}" data-post-id="${postId}">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,14 +124,12 @@ function createPostHtml(post, postId) {
                     </svg>
                     <span class="text-sm sm:text-base font-semibold">${likeCount}</span>
                 </button>
-                
                 <button class="comment-btn flex items-center gap-2 text-gray-400 hover:text-indigo-500 transition" data-post-id="${postId}">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
                     <span class="text-sm sm:text-base font-semibold">${commentCount}</span>
                 </button>
-
                 <button class="share-btn flex items-center gap-2 text-gray-400 hover:text-green-500 transition ml-auto" data-post-id="${postId}">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
@@ -151,12 +143,9 @@ function createPostHtml(post, postId) {
 // Display post
 function displayPost(post, postId, prepend = false) {
     const postsFeed = document.getElementById('posts-feed');
-    
-    // Remove empty state
     const emptyState = postsFeed.querySelector('.text-center');
     if (emptyState) emptyState.remove();
     
-    // Check if post already exists
     const existingPost = postsFeed.querySelector(`[data-post-id="${postId}"]`);
     if (existingPost) {
         existingPost.outerHTML = createPostHtml(post, postId);
@@ -171,38 +160,25 @@ function displayPost(post, postId, prepend = false) {
         }
     }
     
-    // Attach event listeners to new post
     attachPostEventListeners(postId);
 }
 
-// Attach event listeners to a post
+// Attach event listeners
 function attachPostEventListeners(postId) {
     const postCard = document.querySelector(`[data-post-id="${postId}"]`);
     if (!postCard) return;
     
-    // Like button
     const likeBtn = postCard.querySelector('.like-btn');
-    if (likeBtn) {
-        likeBtn.onclick = () => toggleLike(postId);
-    }
+    if (likeBtn) likeBtn.onclick = () => toggleLike(postId);
     
-    // Comment button
     const commentBtn = postCard.querySelector('.comment-btn');
-    if (commentBtn) {
-        commentBtn.onclick = () => openCommentModal(postId);
-    }
+    if (commentBtn) commentBtn.onclick = () => openCommentModal(postId);
     
-    // Share button
     const shareBtn = postCard.querySelector('.share-btn');
-    if (shareBtn) {
-        shareBtn.onclick = () => sharePost(postId);
-    }
+    if (shareBtn) shareBtn.onclick = () => sharePost(postId);
     
-    // Delete button
     const deleteBtn = postCard.querySelector('.delete-post-btn');
-    if (deleteBtn) {
-        deleteBtn.onclick = () => confirmDeletePost(postId);
-    }
+    if (deleteBtn) deleteBtn.onclick = () => confirmDeletePost(postId);
 }
 
 // Create post
@@ -226,22 +202,19 @@ async function createPost(content) {
         likedBy: {}
     };
     
-    console.log('📤 Creating post:', post);
-    
     if (firebaseReady) {
         try {
             const { ref, push } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
             const postsRef = ref(dbMod, 'ourshow/posts');
-            const result = await push(postsRef, post);
-            console.log('✅ Post created:', result.key);
+            await push(postsRef, post);
             return true;
         } catch (error) {
             console.error('❌ Error creating post:', error);
-            alert('Error creating post. Please try again.');
+            alert('Error creating post');
             return false;
         }
     } else {
-        alert('Firebase not available. Please refresh the page.');
+        alert('Firebase not available');
         return false;
     }
 }
@@ -250,71 +223,52 @@ async function createPost(content) {
 async function toggleLike(postId) {
     if (!currentUser) {
         alert('Please log in to like posts');
-        window.location.href = 'login.html';
         return;
     }
     
-    if (!firebaseReady) {
-        alert('Firebase not available');
-        return;
-    }
+    if (!firebaseReady) return;
     
     try {
-        const { ref, get, update, runTransaction } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
+        const { ref, runTransaction } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         const postRef = ref(dbMod, `ourshow/posts/${postId}`);
         
-        // Use transaction to prevent race conditions
         await runTransaction(postRef, (post) => {
             if (post) {
                 if (!post.likedBy) post.likedBy = {};
                 if (!post.likeCount) post.likeCount = 0;
                 
                 if (post.likedBy[currentUser.uid]) {
-                    // Unlike
                     delete post.likedBy[currentUser.uid];
                     post.likeCount = Math.max(0, post.likeCount - 1);
                 } else {
-                    // Like
                     post.likedBy[currentUser.uid] = true;
                     post.likeCount = post.likeCount + 1;
                 }
             }
             return post;
         });
-        
-        console.log('✅ Like toggled');
     } catch (error) {
         console.error('❌ Error toggling like:', error);
-        alert('Error updating like. Please try again.');
     }
 }
 
 // Open comment modal
 async function openCommentModal(postId) {
     currentPostId = postId;
-    const modal = document.getElementById('comment-modal');
     
-    if (!firebaseReady) {
-        alert('Firebase not available');
-        return;
-    }
+    if (!firebaseReady) return;
     
     try {
         const { ref, get } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         const postRef = ref(dbMod, `ourshow/posts/${postId}`);
         const snapshot = await get(postRef);
         
-        if (!snapshot.exists()) {
-            alert('Post not found');
-            return;
-        }
+        if (!snapshot.exists()) return;
         
         const post = snapshot.val();
-        
-        // Display original post
-        const originalPost = document.getElementById('modal-original-post');
         const avatar = post.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author)}&background=6366f1&color=fff&size=128`;
-        originalPost.innerHTML = `
+        
+        document.getElementById('modal-original-post').innerHTML = `
             <div class="flex gap-3">
                 <img src="${avatar}" alt="${escapeHtml(post.author)}" 
                      class="w-10 h-10 rounded-full border-2 border-indigo-500/30"
@@ -326,18 +280,11 @@ async function openCommentModal(postId) {
             </div>
         `;
         
-        // Load comments
         await loadComments(postId);
-        
-        modal.classList.remove('hidden');
-        
-        // Focus comment input
-        setTimeout(() => {
-            document.getElementById('comment-input').focus();
-        }, 100);
+        document.getElementById('comment-modal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('comment-input').focus(), 100);
     } catch (error) {
-        console.error('❌ Error opening comment modal:', error);
-        alert('Error loading comments. Please try again.');
+        console.error('❌ Error opening modal:', error);
     }
 }
 
@@ -360,20 +307,16 @@ async function loadComments(postId) {
         
         const comments = [];
         snapshot.forEach((childSnapshot) => {
-            comments.push({
-                id: childSnapshot.key,
-                ...childSnapshot.val()
-            });
+            comments.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
         
-        // Sort by timestamp (oldest first)
         comments.sort((a, b) => a.timestamp - b.timestamp);
         
         comments.forEach(comment => {
             const avatar = comment.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author)}&background=6366f1&color=fff&size=128`;
-            const commentDiv = document.createElement('div');
-            commentDiv.className = 'flex gap-3 animate-slideUp';
-            commentDiv.innerHTML = `
+            const div = document.createElement('div');
+            div.className = 'flex gap-3';
+            div.innerHTML = `
                 <img src="${avatar}" alt="${escapeHtml(comment.author)}" 
                      class="w-8 h-8 rounded-full border-2 border-indigo-500/30 flex-shrink-0"
                      onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author)}&background=6366f1&color=fff&size=128'">
@@ -385,13 +328,10 @@ async function loadComments(postId) {
                     <p class="text-sm text-gray-300 whitespace-pre-wrap">${escapeHtml(comment.text)}</p>
                 </div>
             `;
-            commentsList.appendChild(commentDiv);
+            commentsList.appendChild(div);
         });
         
-        // Scroll to bottom
-        setTimeout(() => {
-            commentsList.scrollTop = commentsList.scrollHeight;
-        }, 100);
+        setTimeout(() => commentsList.scrollTop = commentsList.scrollHeight, 100);
     } catch (error) {
         console.error('❌ Error loading comments:', error);
     }
@@ -399,17 +339,10 @@ async function loadComments(postId) {
 
 // Add comment
 async function addComment() {
-    if (!currentPostId) return;
-    
-    if (!currentUser) {
-        alert('Please log in to comment');
-        window.location.href = 'login.html';
-        return;
-    }
+    if (!currentPostId || !currentUser) return;
     
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
-    
     if (!text) return;
     
     const comment = {
@@ -425,7 +358,6 @@ async function addComment() {
         const commentsRef = ref(dbMod, `ourshow/posts/${currentPostId}/comments`);
         await push(commentsRef, comment);
         
-        // Update comment count using transaction
         const postRef = ref(dbMod, `ourshow/posts/${currentPostId}`);
         await runTransaction(postRef, (post) => {
             if (post) {
@@ -437,11 +369,8 @@ async function addComment() {
         
         input.value = '';
         await loadComments(currentPostId);
-        
-        console.log('✅ Comment added');
     } catch (error) {
         console.error('❌ Error adding comment:', error);
-        alert('Error adding comment. Please try again.');
     }
 }
 
@@ -450,14 +379,7 @@ function sharePost(postId) {
     const url = `${window.location.origin}/post.html#${postId}`;
     
     if (navigator.share) {
-        navigator.share({
-            title: 'Check out this post on OurShow',
-            text: 'See what people are saying about movies and TV shows!',
-            url: url
-        }).catch((error) => {
-            console.log('Share failed:', error);
-            copyToClipboard(url);
-        });
+        navigator.share({ title: 'Check out this post', url: url }).catch(() => copyToClipboard(url));
     } else {
         copyToClipboard(url);
     }
@@ -466,17 +388,12 @@ function sharePost(postId) {
 // Copy to clipboard
 function copyToClipboard(text) {
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('Link copied to clipboard!');
-        }).catch(() => {
-            fallbackCopy(text);
-        });
+        navigator.clipboard.writeText(text).then(() => alert('Link copied!')).catch(() => fallbackCopy(text));
     } else {
         fallbackCopy(text);
     }
 }
 
-// Fallback copy method
 function fallbackCopy(text) {
     const textarea = document.createElement('textarea');
     textarea.value = text;
@@ -486,27 +403,14 @@ function fallbackCopy(text) {
     textarea.select();
     try {
         document.execCommand('copy');
-        showToast('Link copied to clipboard!');
-    } catch (error) {
-        showToast('Failed to copy link');
+        alert('Link copied!');
+    } catch (e) {
+        alert('Failed to copy');
     }
     document.body.removeChild(textarea);
 }
 
-// Show toast notification
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideUp';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.animation = 'slideUp 0.3s ease-out reverse';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// Confirm delete post
+// Confirm delete
 function confirmDeletePost(postId) {
     deletePostId = postId;
     document.getElementById('delete-modal').classList.remove('hidden');
@@ -521,104 +425,60 @@ async function deletePost() {
         const postRef = ref(dbMod, `ourshow/posts/${deletePostId}`);
         const snapshot = await get(postRef);
         
-        if (snapshot.exists()) {
-            const post = snapshot.val();
-            if (post.userId === currentUser.uid) {
-                await remove(postRef);
-                console.log('✅ Post deleted');
-                showToast('Post deleted successfully');
-            } else {
-                alert('You can only delete your own posts');
-            }
-        } else {
-            alert('Post not found');
+        if (snapshot.exists() && snapshot.val().userId === currentUser.uid) {
+            await remove(postRef);
         }
         
         document.getElementById('delete-modal').classList.add('hidden');
         deletePostId = null;
     } catch (error) {
-        console.error('❌ Error deleting post:', error);
-        alert('Error deleting post. Please try again.');
+        console.error('❌ Error deleting:', error);
     }
 }
 
-// Listen to Firebase posts
+// Listen to posts
 async function listenToPosts() {
-    if (!firebaseReady) {
-        const postsFeed = document.getElementById('posts-feed');
-        postsFeed.innerHTML = '<div class="text-center text-gray-500 py-8"><p class="text-lg mb-2">⚠️ Firebase not available</p><p class="text-sm">Please refresh the page</p></div>';
-        return;
-    }
+    if (!firebaseReady) return;
     
     try {
         const { ref, onChildAdded, onChildChanged, onChildRemoved, query, limitToLast, orderByChild } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         
-        // Load most recent 50 posts, ordered by timestamp
-        const postsRef = query(
-            ref(dbMod, 'ourshow/posts'),
-            orderByChild('timestamp'),
-            limitToLast(50)
-        );
-        
-        // Track displayed posts to prevent duplicates
+        const postsRef = query(ref(dbMod, 'ourshow/posts'), orderByChild('timestamp'), limitToLast(50));
         const displayedPosts = new Set();
         
         onChildAdded(postsRef, (snapshot) => {
-            const post = snapshot.val();
-            const postId = snapshot.key;
-            
-            if (!displayedPosts.has(postId)) {
-                displayedPosts.add(postId);
-                displayPost(post, postId, true); // Prepend to show newest first
+            if (!displayedPosts.has(snapshot.key)) {
+                displayedPosts.add(snapshot.key);
+                displayPost(snapshot.val(), snapshot.key, true);
             }
         });
         
-        onChildChanged(postsRef, (snapshot) => {
-            const post = snapshot.val();
-            displayPost(post, snapshot.key);
-        });
+        onChildChanged(postsRef, (snapshot) => displayPost(snapshot.val(), snapshot.key));
         
         onChildRemoved(postsRef, (snapshot) => {
-            const postCard = document.querySelector(`[data-post-id="${snapshot.key}"]`);
-            if (postCard) {
-                postCard.style.animation = 'slideUp 0.3s ease-out reverse';
-                setTimeout(() => {
-                    postCard.remove();
-                    displayedPosts.delete(snapshot.key);
-                    
-                    // Check if feed is empty
-                    const postsFeed = document.getElementById('posts-feed');
-                    if (postsFeed.children.length === 0) {
-                        postsFeed.innerHTML = '<div class="text-center text-gray-500 py-8"><p class="text-lg mb-2">🎬 No posts yet</p><p class="text-sm">Be the first to share something!</p></div>';
-                    }
-                }, 300);
+            const card = document.querySelector(`[data-post-id="${snapshot.key}"]`);
+            if (card) {
+                card.style.animation = 'slideUp 0.3s reverse';
+                setTimeout(() => card.remove(), 300);
             }
         });
-        
-        console.log('✅ Listening to posts');
     } catch (error) {
-        console.error('❌ Error listening to posts:', error);
-        const postsFeed = document.getElementById('posts-feed');
-        postsFeed.innerHTML = '<div class="text-center text-red-500 py-8"><p class="text-lg mb-2">❌ Error loading posts</p><p class="text-sm">Please refresh the page</p></div>';
+        console.error('❌ Error listening:', error);
     }
 }
 
-// Setup UI event listeners
+// Setup listeners
 function setupEventListeners() {
     const postInput = document.getElementById('post-input');
     const postBtn = document.getElementById('post-btn');
     const charCount = document.getElementById('post-char-count');
     
-    // Character counter
     postInput.addEventListener('input', () => {
-        const length = postInput.value.length;
-        charCount.textContent = `${length}/1000`;
-        
-        // Disable button if empty or too long
-        postBtn.disabled = length === 0 || length > 1000;
+        const len = postInput.value.length;
+        charCount.textContent = `${len}/1000`;
+        postBtn.disabled = len === 0 || len > 1000;
     });
     
-    // Create post
     postBtn.addEventListener('click', async () => {
         const content = postInput.value.trim();
         if (!content) return;
@@ -626,41 +486,51 @@ function setupEventListeners() {
         postBtn.disabled = true;
         postBtn.textContent = 'Posting...';
         
-        const success = await createPost(content);
-        
-        if (success) {
+        if (await createPost(content)) {
             postInput.value = '';
             charCount.textContent = '0/1000';
-            showToast('Post created successfully!');
         }
         
         postBtn.disabled = false;
         postBtn.textContent = 'Post';
     });
     
-    // Allow Ctrl+Enter to post
     postInput.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            postBtn.click();
-        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') postBtn.click();
     });
     
-    // Comment modal
-    const closeModal = document.getElementById('close-modal');
-    const commentModal = document.getElementById('comment-modal');
-    
-    closeModal.addEventListener('click', () => {
-        commentModal.classList.add('hidden');
+    document.getElementById('close-modal').addEventListener('click', () => {
+        document.getElementById('comment-modal').classList.add('hidden');
         currentPostId = null;
     });
     
-    // Close modal on outside click
-    commentModal.addEventListener('click', (e) => {
-        if (e.target === commentModal) {
-            commentModal.classList.add('hidden');
+    document.getElementById('comment-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'comment-modal') {
+            document.getElementById('comment-modal').classList.add('hidden');
             currentPostId = null;
         }
     });
     
-    // Add comment button
     document.getElementById('comment-btn').addEventListener('click', addComment);
+    
+    document.getElementById('comment-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addComment();
+        }
+    });
+    
+    document.getElementById('cancel-delete').addEventListener('click', () => {
+        document.getElementById('delete-modal').classList.add('hidden');
+        deletePostId = null;
+    });
+    
+    document.getElementById('confirm-delete').addEventListener('click', deletePost);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+    await initFirebase();
+    setupEventListeners();
+    await listenToPosts();
+});
