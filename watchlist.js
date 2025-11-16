@@ -44,23 +44,31 @@ async function loadWatchlist() {
   console.log('📋 Loading watchlist...');
   
   if (!currentUser) {
+    console.log('❌ No user logged in');
     container.innerHTML = '<p class="text-center text-gray-400 py-8">Please <a href="login.html" class="text-red-500 underline hover:text-red-400">log in</a> to view your watchlist</p>';
     clearBtn.classList.add('hidden');
     return;
   }
 
+  console.log('✅ User logged in:', currentUser.email);
   const db = window.dbMod;
   
   // Try localStorage first for immediate display
   const localData = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
+  console.log('📦 localStorage data:', localData);
+  
   const localItems = Object.entries(localData).map(([key, value]) => ({
     ...value,
     key: key
   }));
   
+  console.log('📝 Parsed items:', localItems.length);
+  
   if (localItems.length > 0) {
     console.log('✅ Displaying from localStorage:', localItems.length, 'items');
     displayWatchlist(localItems);
+  } else {
+    console.log('⚠️ No items in localStorage');
   }
 
   // Then sync with Firebase
@@ -122,7 +130,7 @@ function displayWatchlist(items) {
         <h3 class="text-xl font-semibold mb-1 cursor-pointer hover:text-red-500 transition" 
             onclick="openItemModal(${idx})">${esc(item.title)}</h3>
         <p class="text-gray-400 mb-2">📅 ${esc(item.year || 'N/A')}</p>
-        <p class="text-sm text-gray-400 mb-3 line-clamp-2">${esc(item.overview || item.description || 'No description')}</p>
+        <p class="text-sm text-gray-400 mb-3 line-clamp-2">${esc(item.overview || 'No description')}</p>
         <div class="text-xs text-gray-500 mb-3 space-y-1">
           ${item.rating ? `<p>⭐ Rating: ${item.rating.toFixed(1)}</p>` : ''}
           ${item.popularity ? `<p>📊 Popularity: ${Math.round(item.popularity)}</p>` : ''}
@@ -163,7 +171,7 @@ window.openItemModal = function(index) {
           <h2 class="text-2xl font-bold text-white mb-2">${esc(item.title)}</h2>
           <p class="text-gray-300 mb-4">📅 ${esc(item.year || 'N/A')}</p>
           
-          <p class="text-gray-400 mb-4">${esc(item.overview || item.description || 'No description available')}</p>
+          <p class="text-gray-400 mb-4">${esc(item.overview || 'No description available')}</p>
           
           <div class="text-sm text-gray-300 space-y-2 mb-4">
             ${item.rating ? `<p><strong>Rating:</strong> ⭐ ${item.rating.toFixed(1)}/10</p>` : ''}
