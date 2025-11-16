@@ -7,19 +7,24 @@ let typingTimeout = null;
 // Wait for Firebase to be initialized
 async function initFirebase() {
     try {
-        // Wait for firebase-config.js to load
-        await new Promise(resolve => {
+        // Wait for firebase-config.js to load (increased timeout)
+        await new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 100; // 10 seconds total
+            
             const checkFirebase = setInterval(() => {
+                attempts++;
+                console.log(`⏳ Waiting for Firebase... Attempt ${attempts}/${maxAttempts}`);
+                
                 if (window.dbMod && window.authMod) {
+                    console.log('✅ Firebase modules found!');
                     clearInterval(checkFirebase);
                     resolve();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkFirebase);
+                    reject(new Error('Firebase timeout after 10 seconds'));
                 }
             }, 100);
-            // Timeout after 5 seconds
-            setTimeout(() => {
-                clearInterval(checkFirebase);
-                resolve();
-            }, 5000);
         });
 
         if (window.dbMod && window.authMod) {
@@ -27,11 +32,14 @@ async function initFirebase() {
             authMod = window.authMod;
             firebaseReady = true;
             console.log('✅ Firebase initialized for community chat');
+            console.log('📊 Database instance:', dbMod);
+            console.log('🔐 Auth instance:', authMod);
             
             // Get current user
             const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
             onAuthStateChanged(authMod, (user) => {
                 currentUser = user;
+                console.log('👤 Current user:', user ? user.email : 'Not logged in');
                 updateOnlineCount();
             });
         } else {
@@ -39,6 +47,7 @@ async function initFirebase() {
         }
     } catch (error) {
         console.warn('⚠️ Firebase unavailable, using localStorage fallback:', error);
+        console.warn('💡 Make sure firebase-config.js is loaded before community.js');
         firebaseReady = false;
     }
 }
@@ -108,27 +117,27 @@ function showUsernameModal() {
 
 // Create message HTML
 function createMessageHtml(message, isOwn = false) {
-    const avatar = message.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(message.username)}&background=6366f1&color=fff`;
+    const avatar = message.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(message.username)}&background=6366f1&color=fff&size=128`;
     
     return `
-        <div class="message-bubble flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}">
+        <div class="message-bubble flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : ''}">
             <img src="${avatar}" alt="${escapeHtml(message.username)}" 
-                 class="w-10 h-10 rounded-full flex-shrink-0 border-2 border-indigo-500/30"
-                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(message.username)}&background=6366f1&color=fff'">
-            <div class="flex-1 ${isOwn ? 'text-right' : ''}">
-                <div class="flex items-baseline gap-2 mb-1 ${isOwn ? 'justify-end' : ''}">
-                    <span class="font-semibold text-sm ${isOwn ? 'text-indigo-400' : 'text-purple-400'}">
+                 class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 border-2 border-indigo-500/30"
+                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(message.username)}&background=6366f1&color=fff&size=128'">
+            <div class="flex-1 min-w-0 ${isOwn ? 'text-right' : ''}">
+                <div class="flex items-baseline gap-1 sm:gap-2 mb-1 ${isOwn ? 'justify-end' : ''}">
+                    <span class="font-semibold text-xs sm:text-sm ${isOwn ? 'text-indigo-400' : 'text-purple-400'} truncate">
                         ${escapeHtml(message.username)}
                     </span>
-                    <span class="text-xs text-gray-500">
+                    <span class="text-[10px] sm:text-xs text-gray-500 flex-shrink-0">
                         ${formatTime(message.timestamp)}
                     </span>
                 </div>
-                <div class="inline-block px-4 py-2 rounded-2xl ${
+                <div class="inline-block px-3 py-2 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base ${
                     isOwn 
                         ? 'bg-indigo-600 text-white' 
                         : 'bg-gray-800 text-gray-100'
-                } max-w-md break-words">
+                } break-words">
                     ${escapeHtml(message.text)}
                 </div>
             </div>
@@ -145,11 +154,17 @@ function displayMessage(message, isOwn = false) {
     if (welcome) welcome.remove();
     
     const msgDiv = document.createElement('div');
+    msgDiv.className = 'message-wrapper';
     msgDiv.innerHTML = createMessageHtml(message, isOwn);
     chatDisplay.appendChild(msgDiv);
     
-    // Auto-scroll to bottom
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    // Auto-scroll to bottom with smooth behavior
+    setTimeout(() => {
+        chatDisplay.scrollTo({
+            top: chatDisplay.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
 
 // Send message to Firebase
@@ -165,11 +180,14 @@ async function sendMessage(text) {
         photoURL: currentUser?.photoURL || null
     };
     
+    console.log('📤 Sending message:', message);
+    
     if (firebaseReady) {
         try {
             const { ref, push } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
             const messagesRef = ref(dbMod, 'globalChat');
-            await push(messagesRef, message);
+            const result = await push(messagesRef, message);
+            console.log('✅ Message sent to Firebase:', result.key);
             return true;
         } catch (error) {
             console.error('❌ Error sending message:', error);
@@ -179,6 +197,7 @@ async function sendMessage(text) {
             return true;
         }
     } else {
+        console.warn('⚠️ Firebase not ready, using localStorage');
         // localStorage fallback
         saveToLocalStorage(message);
         displayMessage(message, true);
@@ -344,6 +363,9 @@ async function initializeChat() {
     const username = getUsername();
     if (!username) return;
     
+    console.log('🚀 Initializing chat for username:', username);
+    console.log('🔥 Firebase ready:', firebaseReady);
+    
     // Load messages
     await listenToMessages();
     
@@ -353,6 +375,8 @@ async function initializeChat() {
     // Update online count periodically
     updateOnlineCount();
     setInterval(updateOnlineCount, 30000);
+    
+    console.log('✅ Chat initialized successfully');
 }
 
 // Setup UI event listeners
