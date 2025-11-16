@@ -7,14 +7,13 @@ let typingTimeout = null;
 // Wait for Firebase to be initialized
 async function initFirebase() {
     try {
-        // Wait for firebase-config.js to load (increased timeout)
+        // Wait for firebase-config.js to load
         await new Promise((resolve, reject) => {
             let attempts = 0;
-            const maxAttempts = 100; // 10 seconds total
+            const maxAttempts = 50; // 5 seconds total
             
             const checkFirebase = setInterval(() => {
                 attempts++;
-                console.log(`⏳ Waiting for Firebase... Attempt ${attempts}/${maxAttempts}`);
                 
                 if (window.dbMod && window.authMod) {
                     console.log('✅ Firebase modules found!');
@@ -22,7 +21,7 @@ async function initFirebase() {
                     resolve();
                 } else if (attempts >= maxAttempts) {
                     clearInterval(checkFirebase);
-                    reject(new Error('Firebase timeout after 10 seconds'));
+                    reject(new Error('Firebase timeout after 5 seconds'));
                 }
             }, 100);
         });
@@ -35,8 +34,8 @@ async function initFirebase() {
             console.log('📊 Database instance:', dbMod);
             console.log('🔐 Auth instance:', authMod);
             
-            // Get current user
-            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+            // Get current user - Import from same version as firebase-config.js (12.6.0)
+            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
             onAuthStateChanged(authMod, (user) => {
                 currentUser = user;
                 console.log('👤 Current user:', user ? user.email : 'Not logged in');
@@ -184,7 +183,8 @@ async function sendMessage(text) {
     
     if (firebaseReady) {
         try {
-            const { ref, push } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+            // Use Firebase 12.6.0 imports
+            const { ref, push } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
             const messagesRef = ref(dbMod, 'globalChat');
             const result = await push(messagesRef, message);
             console.log('✅ Message sent to Firebase:', result.key);
@@ -239,7 +239,8 @@ async function listenToMessages() {
     }
     
     try {
-        const { ref, onChildAdded, query, limitToLast } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+        // Use Firebase 12.6.0 imports
+        const { ref, onChildAdded, query, limitToLast } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         const messagesRef = query(ref(dbMod, 'globalChat'), limitToLast(50));
         const username = getUsername();
         
@@ -280,7 +281,8 @@ async function handleTyping() {
     if (!username || !firebaseReady) return;
     
     try {
-        const { ref, set, remove, onDisconnect } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+        // Use Firebase 12.6.0 imports
+        const { ref, set, remove, onDisconnect } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         const typingRef = ref(dbMod, `typing/${username}`);
         
         // Clear previous timeout
@@ -304,7 +306,8 @@ async function listenToTyping() {
     if (!firebaseReady) return;
     
     try {
-        const { ref, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+        // Use Firebase 12.6.0 imports
+        const { ref, onValue } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
         const typingRef = ref(dbMod, 'typing');
         const username = getUsername();
         
@@ -435,7 +438,8 @@ window.addEventListener('beforeunload', async () => {
         try {
             const username = getUsername();
             if (username) {
-                const { ref, remove } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+                // Use Firebase 12.6.0 imports
+                const { ref, remove } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
                 const typingRef = ref(dbMod, `typing/${username}`);
                 await remove(typingRef);
             }
