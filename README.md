@@ -1,2 +1,3 @@
 # ourshow
-thi is my show
+this is my show
+
