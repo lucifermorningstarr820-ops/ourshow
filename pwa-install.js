@@ -23,14 +23,11 @@
     showInstallButton();
   });
   
-  // Show install button (buttons are now always visible by default)
+  // Show install button
   function showInstallButton() {
     headerBtn?.classList.remove('hidden');
     mobileBtn?.classList.remove('hidden');
   }
-  
-  // Keep buttons visible by default (they're no longer hidden in HTML)
-  // This ensures they show even if beforeinstallprompt hasn't fired yet
   
   // Install app
   async function installApp() {
