@@ -227,10 +227,10 @@
           <span>📥</span>
           <span class="font-semibold">Download</span>
         </a>
-        <button id="collections-link" class="px-4 py-2 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 transition-all duration-200 flex items-center gap-2">
+        <a href="collection.html" class="px-4 py-2 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 transition-all duration-200 flex items-center gap-2">
           <span>🎛️</span>
           <span class="font-semibold">Collections</span>
-        </button>
+        </a>
       </div>
 
       <!-- Header Actions -->
@@ -349,9 +349,9 @@
           <a href="watch&download.html" class="py-3 px-4 hover:bg-red-600/20 rounded-lg transition-colors border border-transparent hover:border-red-500/30">
             <span class="mr-3">📥</span>Watch & Download
           </a>
-          <button id="collections-link-mobile" class="py-3 px-4 hover:bg-pink-600/20 rounded-lg transition-colors border border-transparent hover:border-pink-500/30 text-left flex items-center gap-2">
+          <a href="collection.html" class="py-3 px-4 hover:bg-pink-600/20 rounded-lg transition-colors border border-transparent hover:border-pink-500/30 text-left flex items-center gap-2">
             <span class="mr-3">🎛️</span>Collections
-          </button>
+          </a>
           <button id="mobile-surprise-btn" class="py-3 px-4 rounded-lg transition-colors border border-orange-500/40 bg-orange-600/20 hover:bg-orange-600/30 text-left flex items-center gap-2">
             <span>🎲</span>
             <span>Surprise Me</span>
@@ -659,9 +659,6 @@
       const closeMobile = document.getElementById('close-mobile');
       const profileBtn = document.getElementById('profile-btn');
       const profileDropdown = document.getElementById('profile-dropdown');
-      const collectionsBtn = document.getElementById('collections-link');
-      const collectionsBtnMobile = document.getElementById('collections-link-mobile');
-
       menuBtn?.addEventListener('click', ()=> mobileMenu.classList.toggle('hidden'));
       closeMobile?.addEventListener('click', ()=> mobileMenu.classList.add('hidden'));
       profileBtn?.addEventListener('click', ()=> profileDropdown.classList.toggle('hidden'));
@@ -669,25 +666,6 @@
         if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
           profileDropdown.classList.add('hidden');
         }
-      });
-
-      function goToCollections(fromMobile = false) {
-        const scrolled = typeof window.scrollToCollectionsSection === 'function' && window.scrollToCollectionsSection();
-        if (!scrolled) {
-          if (fromMobile) mobileMenu?.classList.add('hidden');
-          window.location.href = 'index.html#collections';
-        } else if (fromMobile) {
-          mobileMenu?.classList.add('hidden');
-        }
-      }
-
-      collectionsBtn?.addEventListener('click', (e) => {
-        e.preventDefault();
-        goToCollections(false);
-      });
-      collectionsBtnMobile?.addEventListener('click', (e) => {
-        e.preventDefault();
-        goToCollections(true);
       });
     })();
   </script>

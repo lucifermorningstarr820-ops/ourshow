@@ -71,6 +71,45 @@ function formatTime(timestamp) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+// Render shared collection card
+function renderSharedCollection(collection) {
+    if (!collection) return '';
+    
+    const itemCount = collection.itemCount || collection.items?.length || 0;
+    const previewItems = (collection.items || []).slice(0, 4);
+    
+    return `
+        <div class="mt-4 bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="font-semibold text-gray-100 flex items-center gap-2">
+                        <span>🎛️</span>
+                        <span>${escapeHtml(collection.name)}</span>
+                    </h4>
+                    ${collection.description ? `<p class="text-sm text-gray-400 mt-1">${escapeHtml(collection.description)}</p>` : ''}
+                </div>
+                <a href="collection.html?id=${collection.id}" 
+                   class="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 rounded">
+                    View
+                </a>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+                <span>${itemCount} ${itemCount === 1 ? 'item' : 'items'}</span>
+            </div>
+            ${previewItems.length > 0 ? `
+                <div class="mt-3 flex gap-2 flex-wrap">
+                    ${previewItems.map(item => `
+                        <span class="px-2 py-1 text-xs bg-gray-700 rounded text-gray-300">
+                            ${escapeHtml(item.title || 'Unknown')}
+                        </span>
+                    `).join('')}
+                    ${itemCount > 4 ? `<span class="px-2 py-1 text-xs bg-gray-700 rounded text-gray-400">+${itemCount - 4} more</span>` : ''}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
 // Update user avatar
 function updateUserAvatar() {
     const avatar = document.getElementById('user-avatar');
@@ -79,6 +118,38 @@ function updateUserAvatar() {
     } else if (currentUser) {
         avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || currentUser.email)}&background=6366f1&color=fff&size=128`;
     }
+}
+
+// Show shared collection preview in post input
+function showSharedCollectionPreview(collection) {
+    const postInput = document.getElementById('post-input');
+    if (!postInput || !collection) return;
+    
+    // Remove existing preview if any
+    const existingPreview = document.getElementById('shared-collection-preview');
+    if (existingPreview) existingPreview.remove();
+    
+    const preview = document.createElement('div');
+    preview.id = 'shared-collection-preview';
+    preview.className = 'mt-3 bg-indigo-600/20 border border-indigo-500/30 rounded-lg p-3';
+    preview.innerHTML = `
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-lg">🎛️</span>
+                    <span class="font-semibold text-indigo-300">Sharing Collection: ${escapeHtml(collection.name)}</span>
+                </div>
+                ${collection.description ? `<p class="text-sm text-indigo-200/70">${escapeHtml(collection.description)}</p>` : ''}
+                <p class="text-xs text-indigo-300/60 mt-1">${collection.itemCount || collection.items?.length || 0} items</p>
+            </div>
+            <button onclick="this.closest('#shared-collection-preview').remove(); sessionStorage.removeItem('shareCollection');" 
+                    class="text-indigo-300 hover:text-white ml-2">
+                ✕
+            </button>
+        </div>
+    `;
+    
+    postInput.parentElement.appendChild(preview);
 }
 
 // Get user display name
@@ -134,6 +205,7 @@ function createPostHtml(post, postId) {
             </div>
             <div class="mb-4">
                 <p class="text-sm sm:text-base text-gray-200 whitespace-pre-wrap break-words">${escapeHtml(post.content)}</p>
+                ${post.sharedCollection ? renderSharedCollection(post.sharedCollection) : ''}
             </div>
             <div class="flex items-center gap-4 sm:gap-6 pt-3 border-t border-gray-800">
                 <button class="like-btn flex items-center gap-2 text-gray-400 hover:text-red-500 transition ${isLiked ? 'liked text-red-500' : ''}" data-post-id="${postId}">
@@ -203,8 +275,8 @@ function attachPostEventListeners(postId) {
 }
 
 // Create post
-async function createPost(content, isAnonymous = false) {
-    if (!content.trim()) return false;
+async function createPost(content, isAnonymous = false, sharedCollection = null) {
+    if (!content.trim() && !sharedCollection) return false;
     
     if (!currentUser) {
         alert('Please log in to create a post');
@@ -214,14 +286,15 @@ async function createPost(content, isAnonymous = false) {
     
     const post = {
         author: getUserDisplayName(),
-        content: content.trim(),
+        content: content.trim() || (sharedCollection ? `Check out my "${sharedCollection.name}" collection!` : ''),
         timestamp: Date.now(),
         userId: currentUser.uid,
         photoURL: isAnonymous ? null : (currentUser.photoURL || null),
         likeCount: 0,
         commentCount: 0,
         likedBy: {},
-        isAnonymous: isAnonymous
+        isAnonymous: isAnonymous,
+        sharedCollection: sharedCollection || null
     };
     
     if (firebaseReady) {
@@ -683,8 +756,24 @@ function setupEventListeners() {
     });
     
     postBtn.addEventListener('click', async () => {
+        // Check for shared collection
+        let sharedCollection = null;
+        const shareCollectionData = sessionStorage.getItem('shareCollection');
+        if (shareCollectionData) {
+            try {
+                sharedCollection = JSON.parse(shareCollectionData);
+            } catch (e) {
+                console.error('Error parsing shared collection:', e);
+            }
+        }
+        
         const content = postInput.value.trim();
-        if (!content) return;
+        const isAnonymous = document.getElementById('anonymous-checkbox').checked;
+        
+        if (!content && !sharedCollection && !editPostId) {
+            alert('Please enter some content or share a collection');
+            return;
+        }
         
         postBtn.disabled = true;
         const btnText = postBtn.textContent;
@@ -693,27 +782,44 @@ function setupEventListeners() {
         let success = false;
         
         if (editPostId) {
-            // Update existing post
+            // Update existing post (collections can't be added to edited posts)
             success = await updatePost(editPostId, content);
             if (success) {
                 cancelEdit();
             }
         } else {
-            // Create new post - check if anonymous
-            const anonymousCheckbox = document.getElementById('anonymous-checkbox');
-            const isAnonymous = anonymousCheckbox ? anonymousCheckbox.checked : false;
-            success = await createPost(content, isAnonymous);
+            // Create new post
+            success = await createPost(content, isAnonymous, sharedCollection);
             
             if (success) {
                 postInput.value = '';
                 charCount.textContent = '0/1000';
-                if (anonymousCheckbox) anonymousCheckbox.checked = false;
+                document.getElementById('anonymous-checkbox').checked = false;
+                // Hide shared collection preview if exists
+                const preview = document.getElementById('shared-collection-preview');
+                if (preview) preview.remove();
+                // Clear shared collection from sessionStorage
+                sessionStorage.removeItem('shareCollection');
             }
         }
         
         postBtn.disabled = false;
         postBtn.textContent = btnText;
     });
+    
+    // Check for shared collection on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('shareCollection') === 'true') {
+        const shareCollectionData = sessionStorage.getItem('shareCollection');
+        if (shareCollectionData) {
+            try {
+                const collection = JSON.parse(shareCollectionData);
+                showSharedCollectionPreview(collection);
+            } catch (e) {
+                console.error('Error parsing shared collection:', e);
+            }
+        }
+    }
     
     postInput.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') postBtn.click();
