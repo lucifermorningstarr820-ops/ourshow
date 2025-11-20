@@ -4,7 +4,23 @@
       "users": {
         "$uid": {
           ".read": "$uid === auth.uid",
-          ".write": "$uid === auth.uid"
+          ".write": "$uid === auth.uid",
+          "watched": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid"
+          },
+          "watchlist": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid"
+          },
+          "watchlater": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid"
+          },
+          "seriesProgress": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid"
+          }
         }
       },
       "notifications": {
@@ -37,6 +53,12 @@
           "userId": {
             ".validate": "newData.isString()"
           },
+          "photoURL": {
+            ".validate": "newData.isString() || newData.val() == null"
+          },
+          "isAnonymous": {
+            ".validate": "newData.isBoolean()"
+          },
           "likedBy": {
             ".read": true,
             ".write": "auth != null",
@@ -49,6 +71,24 @@
           },
           "commentCount": {
             ".validate": "newData.isNumber()"
+          },
+          "sharedCollection": {
+            ".validate": "newData.hasChildren(['id', 'name']) || newData.val() == null",
+            "id": {
+              ".validate": "newData.isString()"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 200"
+            },
+            "description": {
+              ".validate": "newData.isString() || newData.val() == null"
+            },
+            "itemCount": {
+              ".validate": "newData.isNumber()"
+            },
+            "items": {
+              ".validate": "newData.hasChildren() || newData.val() == null"
+            }
           },
           "comments": {
             ".read": true,

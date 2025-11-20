@@ -18,7 +18,12 @@ self.addEventListener('activate', (event) => {
 // Fetch - pass through to network (no caching)
 self.addEventListener('fetch', (event) => {
   // Just let all requests go to network normally
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      // If fetch fails, return a basic response to prevent errors
+      return new Response('Network error', { status: 408 });
+    })
+  );
 });
 
 console.log('[SW] Minimal service worker loaded - PWA installable');

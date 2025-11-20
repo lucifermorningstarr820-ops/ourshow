@@ -110,6 +110,9 @@ async function initializeFirebase() {
 // Initialize immediately
 firebaseReadyPromise = initializeFirebase();
 
-// Export both the promise and a helper function
+// Export both the promise and a helper function (for ES6 modules)
 export const waitForFirebase = () => firebaseReadyPromise;
 export default firebaseReadyPromise;
+
+// Also expose on window for regular script usage
+window.waitForFirebase = () => firebaseReadyPromise;

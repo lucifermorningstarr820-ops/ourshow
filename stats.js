@@ -31,7 +31,7 @@ async function initStats() {
   }
 }
 
-// Mark item as watched
+// Mark item as watched (saves to watchlist path)
 async function markAsWatched(itemId, itemData, watchedDate = null) {
   if (!currentUser && !localStorage.getItem('ourshow_guest')) {
     alert('Please log in to track watched items');
@@ -49,14 +49,15 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
   try {
     if (db && currentUser) {
       const { ref, set } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
-      const watchedRef = ref(db, `ourshow/users/${currentUser.uid}/watched/${itemId}`);
-      await set(watchedRef, watchedItem);
+      // In this app: watchlist = watched items (items already watched)
+      const watchlistRef = ref(db, `ourshow/users/${currentUser.uid}/watchlist/${itemId}`);
+      await set(watchlistRef, watchedItem);
     }
     
-    // Update localStorage
-    const localWatched = JSON.parse(localStorage.getItem('ourshow_watched') || '{}');
-    localWatched[itemId] = watchedItem;
-    localStorage.setItem('ourshow_watched', JSON.stringify(localWatched));
+    // Update localStorage (using watchlist key to match the structure)
+    const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
+    localWatchlist[itemId] = watchedItem;
+    localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
     
     return true;
   } catch (error) {
@@ -65,28 +66,41 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
   }
 }
 
-// Load watched items
+// Load watched items (from watchlist path - in this app watchlist = watched items)
 async function loadWatchedItems() {
   try {
+    console.log('🔄 Loading watched items...', { db: !!db, currentUser: !!currentUser, uid: currentUser?.uid });
+    
     if (db && currentUser) {
       const { ref, get } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
-      const watchedRef = ref(db, `ourshow/users/${currentUser.uid}/watched`);
-      const snapshot = await get(watchedRef);
+      // In this app: watchlist = watched items (items already watched)
+      const watchlistRef = ref(db, `ourshow/users/${currentUser.uid}/watchlist`);
+      console.log('📡 Fetching from Firebase:', `ourshow/users/${currentUser.uid}/watchlist`);
+      
+      const snapshot = await get(watchlistRef);
       
       if (snapshot.exists()) {
-        watchedItems = Object.values(snapshot.val());
-        localStorage.setItem('ourshow_watched', JSON.stringify(snapshot.val()));
+        const data = snapshot.val();
+        watchedItems = Object.values(data);
+        localStorage.setItem('ourshow_watchlist', JSON.stringify(data));
+        console.log('✅ Loaded from Firebase (watchlist):', watchedItems.length, 'items');
       } else {
         watchedItems = [];
+        console.log('ℹ️ No watched items in Firebase, using empty array');
       }
     } else {
-      const localWatched = JSON.parse(localStorage.getItem('ourshow_watched') || '{}');
-      watchedItems = Object.values(localWatched);
+      console.log('⚠️ Firebase not available, loading from localStorage');
+      // In this app: watchlist = watched items
+      const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
+      watchedItems = Object.values(localWatchlist);
+      console.log('📦 Loaded from localStorage (watchlist):', watchedItems.length, 'items');
     }
   } catch (error) {
-    console.error('Error loading watched items:', error);
-    const localWatched = JSON.parse(localStorage.getItem('ourshow_watched') || '{}');
-    watchedItems = Object.values(localWatched);
+    console.error('❌ Error loading watched items:', error);
+    // Fallback to localStorage
+    const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
+    watchedItems = Object.values(localWatchlist);
+    console.log('📦 Fallback to localStorage (watchlist):', watchedItems.length, 'items');
   }
 }
 
@@ -244,6 +258,7 @@ window.getWatchedItems = () => watchedItems;
 window.getSeriesProgress = () => seriesProgress;
 window.calculateStats = calculateStats;
 window.loadWatchedItems = loadWatchedItems;
+window.initStats = initStats;
 
 // Initialize on load
 if (typeof waitForFirebase === 'function') {
