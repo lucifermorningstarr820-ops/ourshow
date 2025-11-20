@@ -13,10 +13,10 @@ async function initStats() {
     }
     const { getAuth } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
     const { getDatabase } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
-    
+
     auth = window.authMod || getAuth();
     db = window.dbMod || getDatabase();
-    
+
     if (auth) {
       auth.onAuthStateChanged((user) => {
         currentUser = user;
@@ -37,7 +37,7 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
     alert('Please log in to track watched items');
     return false;
   }
-  
+
   const date = watchedDate || new Date().toISOString();
   const watchedItem = {
     ...itemData,
@@ -45,7 +45,7 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
     watchedDate: date,
     watchedTimestamp: Date.now()
   };
-  
+
   try {
     if (db && currentUser) {
       const { ref, set } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
@@ -53,12 +53,12 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
       const watchlistRef = ref(db, `ourshow/users/${currentUser.uid}/watchlist/${itemId}`);
       await set(watchlistRef, watchedItem);
     }
-    
+
     // Update localStorage (using watchlist key to match the structure)
     const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
     localWatchlist[itemId] = watchedItem;
     localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
-    
+
     return true;
   } catch (error) {
     console.error('Error marking as watched:', error);
@@ -70,15 +70,15 @@ async function markAsWatched(itemId, itemData, watchedDate = null) {
 async function loadWatchedItems() {
   try {
     console.log('🔄 Loading watched items...', { db: !!db, currentUser: !!currentUser, uid: currentUser?.uid });
-    
+
     if (db && currentUser) {
       const { ref, get } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
       // In this app: watchlist = watched items (items already watched)
       const watchlistRef = ref(db, `ourshow/users/${currentUser.uid}/watchlist`);
       console.log('📡 Fetching from Firebase:', `ourshow/users/${currentUser.uid}/watchlist`);
-      
+
       const snapshot = await get(watchlistRef);
-      
+
       if (snapshot.exists()) {
         const data = snapshot.val();
         watchedItems = Object.values(data);
@@ -109,7 +109,7 @@ async function updateSeriesProgress(seriesId, seasonNum, episodeNum, totalEpisod
   if (!currentUser && !localStorage.getItem('ourshow_guest')) {
     return false;
   }
-  
+
   const progressKey = `${seriesId}_s${seasonNum}`;
   const progress = {
     seriesId,
@@ -119,19 +119,19 @@ async function updateSeriesProgress(seriesId, seasonNum, episodeNum, totalEpisod
     lastWatched: new Date().toISOString(),
     lastWatchedTimestamp: Date.now()
   };
-  
+
   try {
     if (db && currentUser) {
       const { ref, set } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
       const progressRef = ref(db, `ourshow/users/${currentUser.uid}/seriesProgress/${progressKey}`);
       await set(progressRef, progress);
     }
-    
+
     // Update localStorage
     const localProgress = JSON.parse(localStorage.getItem('ourshow_seriesProgress') || '{}');
     localProgress[progressKey] = progress;
     localStorage.setItem('ourshow_seriesProgress', JSON.stringify(localProgress));
-    
+
     seriesProgress[progressKey] = progress;
     return true;
   } catch (error) {
@@ -147,7 +147,7 @@ async function loadSeriesProgress() {
       const { ref, get } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
       const progressRef = ref(db, `ourshow/users/${currentUser.uid}/seriesProgress`);
       const snapshot = await get(progressRef);
-      
+
       if (snapshot.exists()) {
         seriesProgress = snapshot.val();
         localStorage.setItem('ourshow_seriesProgress', JSON.stringify(seriesProgress));
@@ -176,24 +176,28 @@ function calculateStats() {
     monthlyStats: {},
     calendarView: {}
   };
-  
+
   // Process watched items
   watchedItems.forEach(item => {
     const type = item.type || item.media_type || 'movie';
     if (type === 'tv' || type === 'series') {
       stats.seriesWatched++;
-      const episodes = item.number_of_episodes || 10;
+      let episodes = parseInt(item.number_of_episodes);
+      if (!episodes || isNaN(episodes)) episodes = 10;
+
       const hours = (episodes * 0.75);
       stats.seriesHours += hours;
       stats.totalHours += hours;
     } else {
       stats.moviesWatched++;
-      const runtime = item.runtime || 120;
+      let runtime = parseInt(item.runtime);
+      if (!runtime || isNaN(runtime)) runtime = 120;
+
       const hours = (runtime / 60);
       stats.movieHours += hours;
       stats.totalHours += hours;
     }
-    
+
     // Track genres
     if (item.genres && Array.isArray(item.genres)) {
       item.genres.forEach(genre => {
@@ -201,35 +205,35 @@ function calculateStats() {
         stats.favoriteGenres[genreName] = (stats.favoriteGenres[genreName] || 0) + 1;
       });
     }
-    
+
     // Track by date
     if (item.watchedDate) {
       const date = new Date(item.watchedDate);
       const year = date.getFullYear();
       const month = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       const day = date.toISOString().split('T')[0];
-      
+
       stats.yearlyStats[year] = (stats.yearlyStats[year] || 0) + 1;
       stats.monthlyStats[month] = (stats.monthlyStats[month] || 0) + 1;
       stats.calendarView[day] = (stats.calendarView[day] || []).concat(item);
     }
   });
-  
+
   // Calculate watch streak
   const sortedDates = Object.keys(stats.calendarView)
     .sort()
     .reverse();
-  
+
   let streak = 0;
   let currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
-  
+
   for (let i = 0; i < sortedDates.length; i++) {
     const watchDate = new Date(sortedDates[i]);
     watchDate.setHours(0, 0, 0, 0);
-    
+
     const diffDays = Math.floor((currentDate - watchDate) / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === streak) {
       streak++;
       currentDate.setDate(currentDate.getDate() - 1);
@@ -237,9 +241,9 @@ function calculateStats() {
       break;
     }
   }
-  
+
   stats.watchStreak = streak;
-  
+
   // Sort favorite genres
   stats.favoriteGenres = Object.entries(stats.favoriteGenres)
     .sort((a, b) => b[1] - a[1])
@@ -248,7 +252,7 @@ function calculateStats() {
       obj[genre] = count;
       return obj;
     }, {});
-  
+
   return stats;
 }
 
