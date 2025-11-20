@@ -19,19 +19,6 @@
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="icon" href="/icons/icon-192x192.png">
 
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Load firebase-config first (it provides window.db and window.auth safely if SDK missing) -->
-  <script src="firebase-config.js"></script>
-
-  <!-- Load API config (tmdbFetch & geminiCall helpers) -->
-  <script src="config.js"></script>
-</head>
-
-<body class="bg-gray-900 text-white font-sans">
-
-  <!-- Loading Screen -->
   <div id="loading-screen"
     class="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
     <div class="text-center">
@@ -1071,6 +1058,6 @@
 
   <!-- ✅ PWA Install Script -->
   <script src="pwa-install.js"></script>
-</body>
+  </body>
 
 </html>
