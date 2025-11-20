@@ -14,6 +14,23 @@
 <body class="bg-gray-900 text-white font-sans">
 
   <!-- Header -->
+  <header class="bg-gray-800 shadow-md p-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold select-none cursor-pointer" onclick="location.href='index.html'">
+        <span class="bg-white text-black px-2 py-1 rounded">Our</span>
+        <span class="text-red-500">Show</span>
+      </h1>
+      <div class="flex gap-2">
+        <a href="index.html" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">← Back to Home</a>
+        <a href="stats.html"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2">
+          <span>📊</span> My Stats
+        </a>
+        <button id="clear-all-btn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded hidden">Clear
+          All</button>
+      </div>
+    </div>
+  </header>
 
   <!-- Stats Bar -->
   <div class="flex gap-4 mb-6 flex-wrap">
