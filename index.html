@@ -417,319 +417,302 @@
         <div class="relative flex-1">
           <input id="search-input" type="text" placeholder="Search movies, series or genres..."
             class="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-red-500 pr-12" autocomplete="off" />
-          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm hidden md:block">Press /</span>
-          <div id="search-suggestions"
-            class="hidden absolute mt-2 w-full bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-40 max-h-80 overflow-auto">
-          </div>
+          <button data-sort="popular" class="sort-pill">Most Popular</button>
+          <button data-sort="rated" class="sort-pill">Highest Rated</button>
+          <button data-sort="latest" class="sort-pill">Latest Release</button>
+          <button data-sort="atoz" class="sort-pill">A-Z Title</button>
         </div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <div class="flex bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <button data-theme="dark"
-              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Dark</button>
-            <button data-theme="light"
-              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Light</button>
-            <button data-theme="auto"
-              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Auto</button>
-          </div>
+
+        <div class="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+          <button id="filters-toggle"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-red-500 transition-colors w-full md:w-auto">
+            <span>🎚️</span>
+            <span class="font-semibold">Advanced Filters</span>
+          </button>
         </div>
-      </div>
 
-      <div class="flex flex-wrap gap-2" id="sort-options">
-        <button data-sort="trending" class="sort-pill active-sort">Trending</button>
-        <button data-sort="popular" class="sort-pill">Most Popular</button>
-        <button data-sort="rated" class="sort-pill">Highest Rated</button>
-        <button data-sort="latest" class="sort-pill">Latest Release</button>
-        <button data-sort="atoz" class="sort-pill">A-Z Title</button>
-      </div>
-
-      <div class="flex flex-col md:flex-row md:items-center gap-3 justify-between">
-        <button id="filters-toggle"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-red-500 transition-colors w-full md:w-auto">
-          <span>🎚️</span>
-          <span class="font-semibold">Advanced Filters</span>
-        </button>
-      </div>
-
-      <div id="filters-panel"
-        class="hidden bg-gray-900 border border-gray-700 rounded-xl p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <label class="text-sm">
-          <span class="block mb-1 text-gray-400">Genre</span>
-          <select id="filter-genre" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
-            <option value="">Any</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="27">Horror</option>
-            <option value="10749">Romance</option>
-            <option value="16">Animation</option>
-            <option value="99">Documentary</option>
-          </select>
-        </label>
-        <label class="text-sm">
-          <span class="block mb-1 text-gray-400">Year</span>
-          <select id="filter-year" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
-            <option value="">Any</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2020-2021">2020-2021</option>
-            <option value="2010s">2010s</option>
-            <option value="2000s">2000s</option>
-          </select>
-        </label>
-        <label class="text-sm">
-          <span class="block mb-1 text-gray-400">Rating</span>
-          <select id="filter-rating" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
-            <option value="">Any</option>
-            <option value="7">⭐ 7.0+</option>
-            <option value="8">⭐ 8.0+</option>
-            <option value="9">⭐ 9.0+</option>
-          </select>
-        </label>
-        <label class="text-sm">
-          <span class="block mb-1 text-gray-400">Language</span>
-          <select id="filter-language" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
-            <option value="">Any</option>
-            <option value="en">English</option>
-            <option value="hi">Hindi</option>
-            <option value="ko">Korean</option>
-            <option value="ja">Japanese</option>
-            <option value="es">Spanish</option>
-          </select>
-        </label>
-        <label class="text-sm">
-          <span class="block mb-1 text-gray-400">Runtime</span>
-          <select id="filter-runtime" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
-            <option value="">Any</option>
-            <option value="short">&lt; 90 min</option>
-            <option value="medium">90-120 min</option>
-            <option value="long">&gt; 120 min</option>
-          </select>
-        </label>
-        <div class="md:col-span-2 flex items-center gap-3">
-          <button id="apply-filters" class="flex-1 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold">Apply
-            Filters</button>
-          <button id="reset-filters"
-            class="px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400 text-sm">Reset</button>
+        <div id="filters-panel"
+          class="hidden bg-gray-900 border border-gray-700 rounded-xl p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <label class="text-sm">
+            <span class="block mb-1 text-gray-400">Genre</span>
+            <select id="filter-genre" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="">Any</option>
+              <option value="28">Action</option>
+              <option value="35">Comedy</option>
+              <option value="27">Horror</option>
+              <option value="10749">Romance</option>
+              <option value="16">Animation</option>
+              <option value="99">Documentary</option>
+            </select>
+          </label>
+          <label class="text-sm">
+            <span class="block mb-1 text-gray-400">Year</span>
+            <select id="filter-year" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="">Any</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2020-2021">2020-2021</option>
+              <option value="2010s">2010s</option>
+              <option value="2000s">2000s</option>
+            </select>
+          </label>
+          <label class="text-sm">
+            <span class="block mb-1 text-gray-400">Rating</span>
+            <select id="filter-rating" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="">Any</option>
+              <option value="7">⭐ 7.0+</option>
+              <option value="8">⭐ 8.0+</option>
+              <option value="9">⭐ 9.0+</option>
+            </select>
+          </label>
+          <label class="text-sm">
+            <span class="block mb-1 text-gray-400">Language</span>
+            <select id="filter-language" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="">Any</option>
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="ko">Korean</option>
+              <option value="ja">Japanese</option>
+              <option value="es">Spanish</option>
+            </select>
+          </label>
+          <label class="text-sm">
+            <span class="block mb-1 text-gray-400">Runtime</span>
+            <select id="filter-runtime" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="">Any</option>
+              <option value="short">&lt; 90 min</option>
+              <option value="medium">90-120 min</option>
+              <option value="long">&gt; 120 min</option>
+            </select>
+          </label>
+          <div class="md:col-span-2 flex items-center gap-3">
+            <button id="apply-filters"
+              class="flex-1 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold">Apply
+              Filters</button>
+            <button id="reset-filters"
+              class="px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400 text-sm">Reset</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Main content -->
-  <main class="max-w-6xl mx-auto p-4 space-y-8">
-    <section id="ai-banner"
-      class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded flex items-center justify-between">
-      <div>
-        <h3 class="text-lg font-semibold">AI Recommender — Need a pick?</h3>
-        <p class="text-sm text-gray-400">Ask by mood, genre or actor.</p>
-      </div>
-      <div><a href="ai.html" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Open AI</a></div>
-    </section>
-
-    <section id="sort-showcase" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold">Featured Picks</h3>
-        <button id="clear-sort-showcase" class="text-sm text-red-400 hover:text-red-300">Clear</button>
-      </div>
-      <div id="sort-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
-
-    <section id="filters-results" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold">≡ƒÄ» Filtered Matches</h3>
-        <button id="close-filters-results" class="text-sm text-red-400 hover:text-red-300">Close</button>
-      </div>
-      <div id="filters-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
-
-    <section id="collections-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-4">
-      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <!-- Main content -->
+    <main class="max-w-6xl mx-auto p-4 space-y-8">
+      <section id="ai-banner"
+        class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-semibold">🎞️ Collections & Playlists</h3>
-          <p class="text-sm text-gray-400">Create shareable vibes like "Date Night" or "Horror Marathon".</p>
+          <h3 class="text-lg font-semibold">AI Recommender — Need a pick?</h3>
+          <p class="text-sm text-gray-400">Ask by mood, genre or actor.</p>
         </div>
-        <button id="share-all-collections"
-          class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-500 text-sm">Share All</button>
-      </div>
-      <div class="grid gap-3 md:grid-cols-2">
-        <input id="collection-name" type="text" placeholder="Collection name e.g. Cozy Sundays"
-          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
-        <input id="collection-description" type="text" placeholder="Short vibe or rules"
-          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
-      </div>
-      <div class="flex gap-3 flex-col md:flex-row">
-        <select id="collection-visibility" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 flex-1">
-          <option value="private">Private</option>
-          <option value="friends">Friends</option>
-          <option value="public">Public</option>
-        </select>
-        <button id="create-collection" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">Create
-          Collection</button>
-      </div>
-      <div id="collections-list" class="grid gap-4 md:grid-cols-2"></div>
-    </section>
+        <div><a href="ai.html" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Open AI</a></div>
+      </section>
 
-    <section id="page-home" class="spa-page space-y-10">
-      <div id="sections-container" class="space-y-10"></div>
-    </section>
+      <section id="sort-showcase" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-semibold">Featured Picks</h3>
+          <button id="clear-sort-showcase" class="text-sm text-red-400 hover:text-red-300">Clear</button>
+        </div>
+        <div id="sort-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+      </section>
 
-    <section id="page-all" class="spa-page hidden">
-      <div class="flex justify-between items-center mb-3">
-        <h2 id="all-title" class="text-xl font-semibold"></h2>
-        <button id="back-home" class="text-red-500 hover:underline">← Back to Home</button>
+      <section id="filters-results" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-semibold">≡ƒÄ» Filtered Matches</h3>
+          <button id="close-filters-results" class="text-sm text-red-400 hover:text-red-300">Close</button>
+        </div>
+        <div id="filters-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+      </section>
+
+      <section id="collections-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-4">
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">🎞️ Collections & Playlists</h3>
+            <p class="text-sm text-gray-400">Create shareable vibes like "Date Night" or "Horror Marathon".</p>
+          </div>
+          <button id="share-all-collections"
+            class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-500 text-sm">Share All</button>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2">
+          <input id="collection-name" type="text" placeholder="Collection name e.g. Cozy Sundays"
+            class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+          <input id="collection-description" type="text" placeholder="Short vibe or rules"
+            class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+        </div>
+        <div class="flex gap-3 flex-col md:flex-row">
+          <select id="collection-visibility" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 flex-1">
+            <option value="private">Private</option>
+            <option value="friends">Friends</option>
+            <option value="public">Public</option>
+          </select>
+          <button id="create-collection"
+            class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">Create
+            Collection</button>
+        </div>
+        <div id="collections-list" class="grid gap-4 md:grid-cols-2"></div>
+      </section>
+
+      <section id="page-home" class="spa-page space-y-10">
+        <div id="sections-container" class="space-y-10"></div>
+      </section>
+
+      <section id="page-all" class="spa-page hidden">
+        <div class="flex justify-between items-center mb-3">
+          <h2 id="all-title" class="text-xl font-semibold"></h2>
+          <button id="back-home" class="text-red-500 hover:underline">← Back to Home</button>
+        </div>
+        <div id="all-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+      </section>
+
+      <section id="page-search" class="spa-page hidden">
+        <h2 class="text-xl font-semibold mb-3">🔍 Search Results</h2>
+        <div id="search-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+      </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+      <div class="bg-gray-900 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 overflow-y-auto max-h-[90vh] relative">
+        <button id="close-modal" class="absolute top-4 right-6 text-2xl text-white hover:text-red-500">✕</button>
+        <div id="modal-content" class="p-4 modal-body"></div>
       </div>
-      <div id="all-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
-
-    <section id="page-search" class="spa-page hidden">
-      <h2 class="text-xl font-semibold mb-3">🔍 Search Results</h2>
-      <div id="search-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
-  </main>
-
-  <!-- Modal -->
-  <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-    <div class="bg-gray-900 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 overflow-y-auto max-h-[90vh] relative">
-      <button id="close-modal" class="absolute top-4 right-6 text-2xl text-white hover:text-red-500">✕</button>
-      <div id="modal-content" class="p-4 modal-body"></div>
     </div>
-  </div>
 
-  <!-- load main app logic -->
-  <script src="main.js" defer></script>
+    <!-- load main app logic -->
+    <script src="main.js" defer></script>
 
-  <!-- Auth Gate: Check if user is logged in or guest -->
-  <script type="module">
-    import { waitForFirebase } from './firebase-config.js';
+    <!-- Auth Gate: Check if user is logged in or guest -->
+    <script type="module">
+      import { waitForFirebase } from './firebase-config.js';
 
-    console.log('⏳ Checking authentication...');
+      console.log('⏳ Checking authentication...');
 
-    try {
-      await waitForFirebase();
-      const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+      try {
+        await waitForFirebase();
+        const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
 
-      const auth = window.authMod;
-      const isGuest = localStorage.getItem('ourshow_guest') === 'true';
+        const auth = window.authMod;
+        const isGuest = localStorage.getItem('ourshow_guest') === 'true';
 
-      onAuthStateChanged(auth, (user) => {
-        console.log('👤 User:', user ? user.email : 'Not logged in', '| Guest:', isGuest);
+        onAuthStateChanged(auth, (user) => {
+          console.log('👤 User:', user ? user.email : 'Not logged in', '| Guest:', isGuest);
 
-        if (!user && !isGuest) {
-          console.log('≡ƒÜ½ No auth - redirecting to login...');
-          window.location.href = 'login.html';
-          return;
-        }
-
-        window.isAuthenticated = !!user;
-        window.currentUser = user;
-
-        if (!user) {
-          const postLink = document.querySelector('a[href="post.html"]');
-          const communityLink = document.querySelector('a[href="community.html"]');
-          const aiLink = document.querySelector('a[href="ai.html"]');
-          const aiBanner = document.getElementById('ai-banner');
-
-          if (postLink) postLink.style.opacity = '0.5';
-          if (communityLink) communityLink.style.opacity = '0.5';
-          if (aiLink) aiLink.style.opacity = '0.5';
-          if (aiBanner) aiBanner.style.opacity = '0.5';
-
-          const restrictedPages = ['post.html', 'community.html', 'ai.html'];
-          if (restrictedPages.some(p => window.location.pathname.includes(p))) {
-            alert('⚠️ This feature requires login. Please sign in to continue.');
+          if (!user && !isGuest) {
+            console.log('≡ƒÜ½ No auth - redirecting to login...');
             window.location.href = 'login.html';
+            return;
           }
-        }
 
-        const profileName = document.getElementById('profile-name');
-        const profilePic = document.getElementById('profile-pic');
-        const logoutBtn = document.getElementById('logout-btn');
-        const mobileName = document.getElementById('mobile-profile-name');
-        const mobileEmail = document.getElementById('mobile-profile-email');
-        const mobilePic = document.getElementById('mobile-profile-pic');
-        const mobileEdit = document.getElementById('mobile-edit-profile');
-        mobileEdit?.addEventListener('click', () => window.location.href = 'profile.html');
+          window.isAuthenticated = !!user;
+          window.currentUser = user;
 
-        if (user) {
-          profileName.textContent = user.displayName || 'User';
-          if (user.photoURL) profilePic.src = user.photoURL;
-          if (mobileName) mobileName.textContent = user.displayName || 'User';
-          if (mobileEmail) mobileEmail.textContent = user.email || '';
-          if (mobilePic && user.photoURL) mobilePic.src = user.photoURL;
+          if (!user) {
+            const postLink = document.querySelector('a[href="post.html"]');
+            const communityLink = document.querySelector('a[href="community.html"]');
+            const aiLink = document.querySelector('a[href="ai.html"]');
+            const aiBanner = document.getElementById('ai-banner');
 
-          if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-              await auth.signOut();
-              localStorage.removeItem('ourshow_guest');
+            if (postLink) postLink.style.opacity = '0.5';
+            if (communityLink) communityLink.style.opacity = '0.5';
+            if (aiLink) aiLink.style.opacity = '0.5';
+            if (aiBanner) aiBanner.style.opacity = '0.5';
+
+            const restrictedPages = ['post.html', 'community.html', 'ai.html'];
+            if (restrictedPages.some(p => window.location.pathname.includes(p))) {
+              alert('⚠️ This feature requires login. Please sign in to continue.');
               window.location.href = 'login.html';
-            });
+            }
           }
-        } else if (isGuest) {
-          profileName.textContent = 'Guest';
-          if (mobileName) mobileName.textContent = 'Guest';
-          if (mobileEmail) mobileEmail.textContent = 'Sign in for sync';
-          if (mobilePic) mobilePic.src = 'https://via.placeholder.com/64';
-          if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-              localStorage.removeItem('ourshow_guest');
-              window.location.href = 'login.html';
-            });
+
+          const profileName = document.getElementById('profile-name');
+          const profilePic = document.getElementById('profile-pic');
+          const logoutBtn = document.getElementById('logout-btn');
+          const mobileName = document.getElementById('mobile-profile-name');
+          const mobileEmail = document.getElementById('mobile-profile-email');
+          const mobilePic = document.getElementById('mobile-profile-pic');
+          const mobileEdit = document.getElementById('mobile-edit-profile');
+          mobileEdit?.addEventListener('click', () => window.location.href = 'profile.html');
+
+          if (user) {
+            profileName.textContent = user.displayName || 'User';
+            if (user.photoURL) profilePic.src = user.photoURL;
+            if (mobileName) mobileName.textContent = user.displayName || 'User';
+            if (mobileEmail) mobileEmail.textContent = user.email || '';
+            if (mobilePic && user.photoURL) mobilePic.src = user.photoURL;
+
+            if (logoutBtn) {
+              logoutBtn.addEventListener('click', async () => {
+                await auth.signOut();
+                localStorage.removeItem('ourshow_guest');
+                window.location.href = 'login.html';
+              });
+            }
+          } else if (isGuest) {
+            profileName.textContent = 'Guest';
+            if (mobileName) mobileName.textContent = 'Guest';
+            if (mobileEmail) mobileEmail.textContent = 'Sign in for sync';
+            if (mobilePic) mobilePic.src = 'https://via.placeholder.com/64';
+            if (logoutBtn) {
+              logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('ourshow_guest');
+                window.location.href = 'login.html';
+              });
+            }
           }
-        }
-      });
+        });
 
-    } catch (err) {
-      console.error('❌ Firebase auth check failed:', err);
-      const isGuest = localStorage.getItem('ourshow_guest') === 'true';
-      if (!isGuest) {
-        window.location.href = 'login.html';
-      }
-    }
-  </script>
-
-  <script>
-    // tiny UI wiring (header)
-    (function () {
-      const menuBtn = document.getElementById('menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const closeMobile = document.getElementById('close-mobile');
-      const profileBtn = document.getElementById('profile-btn');
-      const profileDropdown = document.getElementById('profile-dropdown');
-      const collectionsBtn = document.getElementById('collections-link');
-      const collectionsBtnMobile = document.getElementById('collections-link-mobile');
-
-      menuBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-      closeMobile?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-      profileBtn?.addEventListener('click', () => profileDropdown.classList.toggle('hidden'));
-      document.addEventListener('click', (e) => {
-        if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-          profileDropdown.classList.add('hidden');
-        }
-      });
-
-      function goToCollections(fromMobile = false) {
-        const scrolled = typeof window.scrollToCollectionsSection === 'function' && window.scrollToCollectionsSection();
-        if (!scrolled) {
-          if (fromMobile) mobileMenu?.classList.add('hidden');
-          window.location.href = 'index.html#collections';
-        } else if (fromMobile) {
-          mobileMenu?.classList.add('hidden');
+      } catch (err) {
+        console.error('❌ Firebase auth check failed:', err);
+        const isGuest = localStorage.getItem('ourshow_guest') === 'true';
+        if (!isGuest) {
+          window.location.href = 'login.html';
         }
       }
+    </script>
 
-      collectionsBtn?.addEventListener('click', (e) => {
-        e.preventDefault();
-        goToCollections(false);
-      });
-      collectionsBtnMobile?.addEventListener('click', (e) => {
-        e.preventDefault();
-        goToCollections(true);
-      });
-    })();
-  </script>
+    <script>
+      // tiny UI wiring (header)
+      (function () {
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobile = document.getElementById('close-mobile');
+        const profileBtn = document.getElementById('profile-btn');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const collectionsBtn = document.getElementById('collections-link');
+        const collectionsBtnMobile = document.getElementById('collections-link-mobile');
 
-  <!-- ✅ PWA Install Script -->
-  <script src="pwa-install.js"></script>
+        menuBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        closeMobile?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        profileBtn?.addEventListener('click', () => profileDropdown.classList.toggle('hidden'));
+        document.addEventListener('click', (e) => {
+          if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+          }
+        });
+
+        function goToCollections(fromMobile = false) {
+          const scrolled = typeof window.scrollToCollectionsSection === 'function' && window.scrollToCollectionsSection();
+          if (!scrolled) {
+            if (fromMobile) mobileMenu?.classList.add('hidden');
+            window.location.href = 'index.html#collections';
+          } else if (fromMobile) {
+            mobileMenu?.classList.add('hidden');
+          }
+        }
+
+        collectionsBtn?.addEventListener('click', (e) => {
+          e.preventDefault();
+          goToCollections(false);
+        });
+        collectionsBtnMobile?.addEventListener('click', (e) => {
+          e.preventDefault();
+          goToCollections(true);
+        });
+      })();
+    </script>
+
+    <!-- ✅ PWA Install Script -->
+    <script src="pwa-install.js"></script>
 </body>
 
 </html>
