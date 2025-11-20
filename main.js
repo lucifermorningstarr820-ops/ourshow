@@ -812,6 +812,33 @@ function addPageParam(endpoint, page) {
   return `${endpoint}${sep}page=${page}`;
 }
 
+/* RENDER HOME - Load all sections */
+async function renderHome() {
+  const container = document.getElementById('sections-container');
+  if (!container) {
+    console.error('sections-container not found!');
+    return;
+  }
+
+  // Clear existing content
+  container.innerHTML = '';
+
+  console.log('🎬 Loading sections...');
+
+  // Render all sections
+  for (const section of SECTIONS) {
+    try {
+      await renderSection(section);
+      LOADED_SECTIONS++;
+    } catch (error) {
+      console.error(`Error loading section ${section.id}:`, error);
+    }
+  }
+
+  console.log(`✅ Loaded ${LOADED_SECTIONS} sections`);
+}
+
+
 /* RENDER SECTION */
 async function renderSection(section) {
   const wrap = document.getElementById("sections-container");
