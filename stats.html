@@ -233,9 +233,9 @@
       if (typeof window.getWatchedItems === 'function') {
         watchedItems = window.getWatchedItems();
       } else {
-        // Fallback: try to get from localStorage
-        const localWatched = JSON.parse(localStorage.getItem('ourshow_watched') || '{}');
-        watchedItems = Object.values(localWatched);
+        // Fallback: try to get from localStorage (using watchlist key)
+        const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
+        watchedItems = Object.values(localWatchlist);
       }
       
       console.log('📦 Watched items loaded:', watchedItems.length, watchedItems);
@@ -356,10 +356,8 @@
       alert(`Watched on ${dateStr}:\n${items.map(i => `• ${i.title}`).join('\n')}`);
     }
     
-    function showWatchedDetails(id) {
-      // Could open modal with details
-      console.log('Show details for:', id);
-    }
+    // Note: Watchlist items are displayed in watchlist.html, not here
+    // This function is not used since we removed the "Recently Watched" section
     
     async function renderSeriesProgress() {
       const progress = getSeriesProgress();
