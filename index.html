@@ -1,33 +1,13 @@
-@ -1,552 +1,494 @@
-<!doctype html>
-<html lang="en">
+﻿<link rel="icon" href="/icons/icon-192x192.png">
 
-<head>
-  <!-- Modern favicon -->
-  <meta charset="utf-8" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>OurShow</title>
-  <meta name="theme-color" content="#ef4444" />
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- ✅ PWA META TAGS -->
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="OurShow">
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-  <link rel="icon" href="/icons/icon-192x192.png">
+<!-- Load firebase-config first (it provides window.db and window.auth safely if SDK missing) -->
+<script src="firebase-config.js"></script>
 
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Load firebase-config first (it provides window.db and window.auth safely if SDK missing) -->
-  <script src="firebase-config.js"></script>
-
-  <!-- Load API config (tmdbFetch & geminiCall helpers) -->
-  <script src="config.js"></script>
+<!-- Load API config (tmdbFetch & geminiCall helpers) -->
+<script src="config.js"></script>
 </head>
 
 <body class="bg-gray-900 text-white font-sans">
@@ -57,20 +37,7 @@
         </div>
       </div>
 
-      <!-- Brand Name -->
-      <div class="mb-6">
-        <div
-          class="text-5xl font-extrabold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent mb-2">
-          Show
-        </div>
-        <div class="text-sm text-gray-400 tracking-wide">
-          🎬 discover • 💬 discuss • 🤖 recommend
-        </div>
-      </div>
-
-      <!-- Loading Text -->
-      <p class="text-gray-300 text-lg mb-6 animate-pulse">
-        Loading your entertainment...
+      Loading your entertainment...
       </p>
 
       <!-- Progress Bar -->
@@ -122,296 +89,64 @@
       transition: opacity 0.3s ease;
     }
 
-    :root {
-      --accent: #ef4444;
-      --accent-strong: #dc2626;
-      --accent-soft: #fda4af;
-      --accent-soft-bg: rgba(239, 68, 68, 0.18);
-      --accent-contrast: #ffffff;
-      --accent-gradient-from: #ef4444;
-      --accent-gradient-to: #ec4899;
-      --accent-glow: rgba(236, 72, 153, 0.35);
-      --surface-card: rgba(17, 24, 39, 0.92);
-      --surface-muted: rgba(30, 41, 59, 0.7);
-      --surface-overlay: rgba(15, 23, 42, 0.9);
-      --surface-border: rgba(148, 163, 184, 0.35);
-      --text-primary: #f8fafc;
-      --text-secondary: #cbd5f5;
-    }
-
-    body {
-      color: var(--text-primary);
-    }
-
-    #progress-bar {
-      background: linear-gradient(90deg, var(--accent-gradient-from), var(--accent-gradient-to)) !important;
-    }
-
-    .eyebrow-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .theme-vibe-card {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--surface-border);
-      border-radius: 1rem;
-      padding: 1rem;
-    }
-
-    body.theme-light .theme-vibe-card {
-      background: var(--surface-muted);
-    }
-
     .sort-pill {
       padding: 0.4rem 0.85rem;
       border-radius: 999px;
       font-size: 0.85rem;
       font-weight: 600;
-      border: 1px solid var(--surface-border);
-      color: var(--text-secondary);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e2e8f0;
       transition: all 0.2s ease;
-      background-color: var(--surface-muted);
+      background-color: rgba(30, 41, 59, 0.6);
     }
 
     .sort-pill:hover {
-      border-color: var(--accent-soft);
-      color: var(--text-primary);
+      border-color: #f87171;
+      color: #fff;
     }
 
     .sort-pill.active-sort {
-      background: linear-gradient(90deg, var(--accent-gradient-from), var(--accent-gradient-to));
+      background: linear-gradient(90deg, #dc2626, #ec4899);
       border-color: transparent;
-      color: var(--accent-contrast);
-      box-shadow: 0 10px 25px var(--accent-glow);
-    }
-
-    .logo-badge {
-      background: linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to)) !important;
-      box-shadow: 0 18px 35px var(--accent-glow);
-    }
-
-    .bg-red-600 {
-      background-color: var(--accent) !important;
-    }
-
-    .bg-red-700 {
-      background-color: var(--accent-strong) !important;
-    }
-
-    .hover\:bg-red-700:hover,
-    .hover\:bg-red-600:hover {
-      background-color: var(--accent-strong) !important;
-    }
-
-    .bg-red-600\/20,
-    .bg-red-600\/30,
-    .bg-red-600\/40 {
-      background-color: var(--accent-soft-bg) !important;
-    }
-
-    .text-red-400,
-    .text-red-500,
-    .text-red-600 {
-      color: var(--accent) !important;
-    }
-
-    .border-red-600,
-    .border-red-500\/30,
-    .border-red-500\/40,
-    .border-red-600\/30,
-    .border-red-600\/40 {
-      border-color: var(--accent-soft) !important;
-    }
-
-    .bg-gradient-to-r.from-red-500,
-    .bg-gradient-to-r.from-red-600,
-    .bg-gradient-to-r.from-red-600\/70 {
-      background: linear-gradient(90deg, var(--accent-gradient-from), var(--accent-gradient-to)) !important;
-    }
-
-    .bg-gradient-to-br.from-red-600,
-    .bg-gradient-to-br.from-red-500 {
-      background: linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to)) !important;
-    }
-
-    #notification-count,
-    #for-you-row .badge.bg-red-600,
-    #collection-picker .badge.bg-red-600 {
-      background-color: var(--accent-strong) !important;
-    }
-
-    .theme-toggle-btn,
-    .mobile-theme-btn,
-    .vibe-btn,
-    .mobile-vibe-btn {
-      border-radius: 0.75rem;
-      padding: 0.45rem 0.85rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      border: 1px solid var(--surface-border);
-      color: var(--text-secondary);
-      background-color: rgba(148, 163, 184, 0.08);
-      transition: all 0.2s ease;
-    }
-
-    .theme-toggle-btn.active,
-    .mobile-theme-btn.active,
-    .vibe-btn.active,
-    .mobile-vibe-btn.active {
-      color: var(--accent-contrast);
-      border-color: transparent;
-      background: linear-gradient(90deg, var(--accent-gradient-from), var(--accent-gradient-to));
-      box-shadow: 0 12px 32px var(--accent-glow);
-    }
-
-    .theme-toggle-btn:hover,
-    .mobile-theme-btn:hover,
-    .vibe-btn:hover,
-    .mobile-vibe-btn:hover {
-      color: var(--accent-contrast);
-      background: linear-gradient(90deg, var(--accent-gradient-from), var(--accent-gradient-to));
     }
 
     body.theme-light {
       background-color: #f6f6f6;
-      color: var(--text-primary);
-      --surface-card: #ffffff;
-      --surface-muted: #f8fafc;
-      --surface-overlay: rgba(255, 255, 255, 0.98);
-      --surface-border: #e0e7ff;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
+      color: #111827;
     }
 
     body.theme-light .bg-gray-900,
-    body.theme-light .bg-gray-900\/80,
     body.theme-light .bg-gray-900\/70,
-    body.theme-light .bg-gray-900\/60,
-    body.theme-light .bg-gray-900\/50,
-    body.theme-light .bg-gray-900\/40,
     body.theme-light .bg-gray-800,
-    body.theme-light .bg-gray-800\/80,
-    body.theme-light .bg-gray-800\/70,
-    body.theme-light .bg-gray-800\/60,
-    body.theme-light .bg-gray-800\/50,
-    body.theme-light .bg-gray-700,
-    body.theme-light .bg-gray-700\/80,
-    body.theme-light .bg-gray-700\/60,
-    body.theme-light .bg-gray-700\/50,
-    body.theme-light .bg-gray-700\/40,
-    body.theme-light .bg-gray-600\/60 {
-      background-color: var(--surface-card) !important;
-      color: var(--text-primary) !important;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-    }
-
-    body.theme-light .bg-gray-900\/30,
-    body.theme-light .bg-gray-900\/20 {
-      background-color: var(--surface-muted) !important;
+    body.theme-light .bg-gray-700 {
+      background-color: #ffffff !important;
+      color: #111827 !important;
     }
 
     body.theme-light .text-white {
-      color: var(--text-primary) !important;
+      color: #111827 !important;
     }
 
-    body.theme-light .text-gray-400,
-    body.theme-light .text-gray-500,
-    body.theme-light .text-gray-300 {
-      color: var(--text-secondary) !important;
+    body.theme-light .text-gray-400 {
+      color: #475569 !important;
     }
 
-    body.theme-light .border-gray-700,
-    body.theme-light .border-gray-800,
-    body.theme-light .border-gray-900,
-    body.theme-light .border-gray-900\/60,
-    body.theme-light .border-gray-900\/30,
-    body.theme-light .border-gray-700\/60 {
-      border-color: var(--surface-border) !important;
+    body.theme-light .border-gray-700 {
+      border-color: #e2e8f0 !important;
     }
 
-    body.theme-light .text-gray-100,
-    body.theme-light .text-gray-200 {
-      color: var(--text-primary) !important;
+    body.theme-light .bg-black {
+      background-color: rgba(15, 23, 42, 0.9) !important;
     }
 
-    body.theme-light header.bg-gradient-to-r {
-      background: linear-gradient(90deg, var(--surface-overlay), #f5f5f5) !important;
-      border-bottom: 1px solid var(--surface-border) !important;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08) !important;
+    body.theme-light .sort-pill {
+      background-color: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5f5;
     }
 
-    body.theme-light #mobile-menu {
-      background-color: rgba(15, 23, 42, 0.2) !important;
-    }
-
-    body.theme-light #mobile-menu>div {
-      background: var(--surface-overlay) !important;
-      border-left: 1px solid var(--surface-border) !important;
-      color: var(--text-primary) !important;
-    }
-
-    body.theme-light #mobile-profile-card {
-      background-color: var(--surface-muted) !important;
-      border-color: var(--surface-border) !important;
-    }
-
-    body.theme-light #headings-overlay>div,
-    body.theme-light #toplist-overlay>div,
-    body.theme-light #notifications-panel,
-    body.theme-light #profile-dropdown,
-    body.theme-light #collection-picker,
-    body.theme-light #detail-modal .bg-gray-900,
-    body.theme-light .section-wrapper {
-      background-color: var(--surface-overlay) !important;
-      border-color: var(--surface-border) !important;
-      color: var(--text-primary) !important;
-    }
-
-    body.theme-light #detail-modal {
-      background-color: rgba(15, 23, 42, 0.2) !important;
-    }
-
-    body.theme-light #headings-overlay input,
-    body.theme-light #search-input,
-    body.theme-light #filters-panel select,
-    body.theme-light #filters-panel input,
-    body.theme-light #filters-panel button {
-      color: var(--text-primary) !important;
-    }
-
-    body.theme-light #ai-banner,
-    body.theme-light #sort-showcase,
-    body.theme-light #filters-results,
-    body.theme-light #for-you-section,
-    body.theme-light #best-headings,
-    body.theme-light #collections-section,
-    body.theme-light #contextual-filter-bar,
-    body.theme-light #filters-panel,
-    body.theme-light #filters-summary {
-      background-color: var(--surface-card) !important;
-      border-color: var(--surface-border) !important;
-    }
-
-    body.theme-light #sections-container .section-wrapper h2,
-    body.theme-light #sections-container .section-wrapper button {
-      color: var(--text-primary) !important;
-    }
-
-    body.theme-light .bg-gradient-to-r.from-gray-900,
-    body.theme-light .bg-gradient-to-r.from-gray-900\/70,
-    body.theme-light .bg-gradient-to-r.from-gray-800,
-    body.theme-light .bg-gradient-to-b.from-gray-900 {
-      background: linear-gradient(90deg, #fff, #f4f4f4) !important;
-    }
-
-    body.theme-light .hover\:bg-gray-700:hover,
-    body.theme-light .hover\:bg-gray-700\/60:hover,
-    body.theme-light .hover\:bg-gray-800:hover {
-      background-color: var(--surface-muted) !important;
+    body.theme-light .sort-pill.active-sort {
+      color: #fff;
     }
   </style>
 
@@ -487,7 +222,7 @@
           <div class="text-2xl font-extrabold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
             Show
           </div>
-          <div class="text-xs text-gray-400 tracking-wide">
+          <div class="text-xs text-gray-400 -mt-1 tracking-wide">
             🎬 discover • 💬 discuss • 🤖 recommend
           </div>
         </div>
@@ -514,33 +249,46 @@
           class="px-4 py-2 rounded-lg bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 transition-all duration-200 flex items-center gap-2">
           <span>📥</span>
           <span class="font-semibold">Download</span>
+        </a>
+        <button id="collections-link"
+          class="px-4 py-2 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>🎞️</span>
+          <span class="font-semibold">Collections</span>
+        </button>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="hidden md:flex items-center gap-3">
+        <button id="surprise-btn-header"
+          class="px-4 py-2 rounded-lg bg-orange-600/20 hover:bg-orange-600/40 border border-orange-500/40 text-sm font-semibold transition-all duration-200 flex items-center gap-2">
           <span>🎲</span>
           <span>Surprise Me</span>
+        </button>
+        <button id="install-app-btn"
+          class="hidden px-4 py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-sm font-semibold transition-colors duration-200 flex items-center gap-2">
+          <span>📱</span>
+          <span>Install App</span>
+        </button>
+        <div class="relative" id="notification-wrapper">
+          <button id="notification-bell"
+            class="relative px-3 py-2 rounded-lg bg-gray-700/60 hover:bg-gray-700 border border-gray-600 transition-all duration-200 flex items-center gap-2">
+            <span>🔔</span>
+            <span class="text-sm font-semibold">Alerts</span>
+            <span id="notification-count"
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
           </button>
-          <button id="install-app-btn"
-            class="hidden px-4 py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-sm font-semibold transition-colors duration-200 flex items-center gap-2">
-            <span>📱</span>
-            <span>Install App</span>
-          </button>
-          <div class="relative" id="notification-wrapper">
-            <button id="notification-bell"
-              class="relative px-3 py-2 rounded-lg bg-gray-700/60 hover:bg-gray-700 border border-gray-600 transition-all duration-200 flex items-center gap-2">
-              <span>🔔</span>
-              <span class="text-sm font-semibold">Alerts</span>
-              <span id="notification-count"
-                class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
-            </button>
-            <div id="notifications-panel"
-              class="hidden absolute right-0 mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl w-72 overflow-hidden z-50">
-              <div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-                <p class="font-semibold">Notifications</p>
-                <button id="mark-notifications-read" class="text-xs text-red-400 hover:text-red-300">Mark all</button>
-              </div>
-              <div id="notifications-list" class="max-h-80 overflow-y-auto divide-y divide-gray-800">
-                <p class="text-xs text-gray-400 px-4 py-4">No alerts yet. You’re all caught up!</p>
-              </div>
+          <div id="notifications-panel"
+            class="hidden absolute right-0 mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl w-72 overflow-hidden z-50">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+              <p class="font-semibold">Notifications</p>
+              <button id="mark-notifications-read" class="text-xs text-red-400 hover:text-red-300">Mark all</button>
+            </div>
+            <div id="notifications-list" class="max-h-80 overflow-y-auto divide-y divide-gray-800">
+              <p class="text-xs text-gray-400 px-4 py-4">No alerts yet. You,
+    'ΓÇÖ': re all caught up!</p>
             </div>
           </div>
+        </div>
       </div>
 
       <!-- User Section -->
@@ -548,17 +296,15 @@
         <a href="watchlist.html" class="relative group">
           <div
             class="px-3 py-2 rounded-lg bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/30 transition-all duration-200 flex items-center gap-2">
-            class="px-3 py-2 rounded-lg bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/30
-            transition-all duration-200 flex items-center gap-2">
             <span class="text-xl">⭐</span>
             <span id="watchlist-count"
               class="bg-yellow-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">0</span>
-@ -555,48 +497,46 @@
+          </div>
+          <span
             class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Watchlist
           </span>
         </a>
-      </a>
 
         <a href="watchlater.html" class="relative group">
           <div
@@ -580,41 +326,6 @@
               class="w-8 h-8 rounded-full border-2 border-red-500/50" alt="profile">
             <span id="profile-name" class="text-sm font-semibold">Guest</span>
             <span class="text-xs opacity-70">▼</span>
-      <a href="watchlater.html" class="relative group">
-        <div
-          class="px-3 py-2 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/30 transition-all duration-200 flex items-center gap-2">
-          <span class="text-xl">⏳</span>
-          <span id="watchlater-count" class="bg-cyan-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">0</span>
-        </div>
-        <span
-          class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Watch Later
-        </span>
-      </a>
-
-      <div id="profile-menu" class="ml-3 relative">
-        <button id="profile-btn"
-          class="flex items-center gap-2 bg-gray-700/50 hover:bg-gray-700 px-3 py-2 rounded-lg border border-gray-600/50 transition-all duration-200 hover:scale-105">
-          <img id="profile-pic" src="https://via.placeholder.com/36"
-            class="w-8 h-8 rounded-full border-2 border-red-500/50" alt="profile">
-          <span id="profile-name" class="text-sm font-semibold">Guest</span>
-          <span class="text-xs opacity-70">▼</span>
-        </button>
-        <div id="profile-dropdown"
-          class="hidden absolute right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl w-48 overflow-hidden">
-          <a href="profile.html" class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">👤</span>Edit Profile
-          </a>
-          <a href="watchlist.html" class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">⭐</span>My Watchlist
-          </a>
-          <a href="watchlater.html"
-            class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">⏳</span>My Watch Later
-          </a>
-          <button id="logout-btn"
-            class="w-full text-left px-4 py-3 text-red-400 hover:bg-red-900/30 transition-colors font-semibold">
-            <span class="mr-2">🚪</span>Logout
           </button>
           <div id="profile-dropdown"
             class="hidden absolute right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl w-48 overflow-hidden">
@@ -635,7 +346,418 @@
             </button>
           </div>
         </div>
-      </div>
       </nav>
 
       <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center gap-2">
+        <button id="menu-btn" class="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50">
+      <div class="bg-gradient-to-b from-gray-900 to-gray-800 w-11/12 max-w-sm h-full p-6 overflow-auto shadow-2xl">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-700">
+          <div class="flex items-center gap-3">
+            <div class="logo-badge bg-gradient-to-br from-red-600 to-red-700 px-3 py-2 rounded-lg">
+              <span class="text-white font-bold">OUR</span>
+            </div>
+            <div class="text-xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">Show
+            </div>
+          </div>
+          <button id="close-mobile" class="text-red-400 hover:text-red-300 font-bold text-xl">✕</button>
+        </div>
+        <div id="mobile-profile-card"
+          class="bg-gray-900 rounded-xl p-4 border border-gray-700 mb-4 flex items-center gap-3">
+          <img id="mobile-profile-pic" src="https://via.placeholder.com/64"
+            class="w-12 h-12 rounded-full border border-gray-600" alt="profile">
+          <div class="flex-1">
+            <p id="mobile-profile-name" class="font-semibold">Guest</p>
+            <p id="mobile-profile-email" class="text-xs text-gray-400 truncate">Sign in for sync</p>
+          </div>
+          <button id="mobile-edit-profile" class="text-xs text-red-400 hover:text-red-300 underline">Edit</button>
+        </div>
+        <nav class="flex flex-col gap-2">
+          <a href="ai.html"
+            class="py-3 px-4 hover:bg-purple-600/20 rounded-lg transition-colors border border-transparent hover:border-purple-500/30">
+            <span class="mr-3">🤖</span>AI Recommender
+          </a>
+          <a href="post.html"
+            class="py-3 px-4 hover:bg-blue-600/20 rounded-lg transition-colors border border-transparent hover:border-blue-500/30">
+            <span class="mr-3">📝</span>Posts
+          </a>
+          <a href="community.html"
+            class="py-3 px-4 hover:bg-green-600/20 rounded-lg transition-colors border border-transparent hover:border-green-500/30">
+            <span class="mr-3">💬</span>Community
+          </a>
+          <a href="watch&download.html"
+            class="py-3 px-4 hover:bg-red-600/20 rounded-lg transition-colors border border-transparent hover:border-red-500/30">
+            <span class="mr-3">📥</span>Watch & Download
+          </a>
+          <button id="collections-link-mobile"
+            class="py-3 px-4 hover:bg-pink-600/20 rounded-lg transition-colors border border-transparent hover:border-pink-500/30 text-left flex items-center gap-2">
+            <span class="mr-3">🎞️</span>Collections
+          </button>
+          <button id="mobile-surprise-btn"
+            class="py-3 px-4 rounded-lg transition-colors border border-orange-500/40 bg-orange-600/20 hover:bg-orange-600/30 text-left flex items-center gap-2">
+            <span>🎲</span>
+            <span>Surprise Me</span>
+          </button>
+          <div class="h-px bg-gray-700 my-2"></div>
+          <a href="watchlist.html"
+            class="py-3 px-4 hover:bg-yellow-600/20 rounded-lg transition-colors border border-transparent hover:border-yellow-500/30">
+            <span class="mr-3">⭐</span>My Watchlist
+          </a>
+          <a href="watchlater.html"
+            class="py-3 px-4 hover:bg-cyan-600/20 rounded-lg transition-colors border border-transparent hover:border-cyan-500/30">
+            <span class="mr-3">⏳</span>My Watch Later
+          </a>
+          <div class="h-px bg-gray-700 my-2"></div>
+          <div class="flex flex-col gap-2">
+            <p class="text-xs uppercase tracking-wide text-gray-500">Theme</p>
+            <div class="flex gap-2">
+              <button class="mobile-theme-btn flex-1 px-3 py-2 rounded-lg bg-gray-900 border border-gray-700"
+                data-theme="dark">Dark</button>
+              <button class="mobile-theme-btn flex-1 px-3 py-2 rounded-lg bg-gray-900 border border-gray-700"
+                data-theme="light">Light</button>
+              <button class="mobile-theme-btn flex-1 px-3 py-2 rounded-lg bg-gray-900 border border-gray-700"
+                data-theme="auto">Auto</button>
+            </div>
+          </div>
+          <button id="mobile-install-btn"
+            class="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-purple-600/20 border border-purple-500/40 text-sm font-semibold hidden">
+            <span>📱</span>
+            <span>Add to Home</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search + Controls -->
+  <div class="max-w-6xl mx-auto p-4 space-y-4">
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col md:flex-row gap-3">
+        <div class="relative flex-1">
+          <input id="search-input" type="text" placeholder="Search movies, series or genres..."
+            class="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-red-500 pr-12" autocomplete="off" />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm hidden md:block">Press /</span>
+          <div id="search-suggestions"
+            class="hidden absolute mt-2 w-full bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-40 max-h-80 overflow-auto">
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="flex bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+            <button data-theme="dark"
+              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Dark</button>
+            <button data-theme="light"
+              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Light</button>
+            <button data-theme="auto"
+              class="theme-toggle-btn flex-1 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700">Auto</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2" id="sort-options">
+        <button data-sort="trending" class="sort-pill active-sort">Trending</button>
+        <button data-sort="popular" class="sort-pill">Most Popular</button>
+        <button data-sort="rated" class="sort-pill">Highest Rated</button>
+        <button data-sort="latest" class="sort-pill">Latest Release</button>
+        <button data-sort="atoz" class="sort-pill">A-Z Title</button>
+      </div>
+
+      <div class="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+        <button id="filters-toggle"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-red-500 transition-colors w-full md:w-auto">
+          <span>🎚️</span>
+          <span class="font-semibold">Advanced Filters</span>
+        </button>
+      </div>
+
+      <div id="filters-panel"
+        class="hidden bg-gray-900 border border-gray-700 rounded-xl p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <label class="text-sm">
+          <span class="block mb-1 text-gray-400">Genre</span>
+          <select id="filter-genre" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+            <option value="">Any</option>
+            <option value="28">Action</option>
+            <option value="35">Comedy</option>
+            <option value="27">Horror</option>
+            <option value="10749">Romance</option>
+            <option value="16">Animation</option>
+            <option value="99">Documentary</option>
+          </select>
+        </label>
+        <label class="text-sm">
+          <span class="block mb-1 text-gray-400">Year</span>
+          <select id="filter-year" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+            <option value="">Any</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2020-2021">2020-2021</option>
+            <option value="2010s">2010s</option>
+            <option value="2000s">2000s</option>
+          </select>
+        </label>
+        <label class="text-sm">
+          <span class="block mb-1 text-gray-400">Rating</span>
+          <select id="filter-rating" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+            <option value="">Any</option>
+            <option value="7">⭐ 7.0+</option>
+            <option value="8">⭐ 8.0+</option>
+            <option value="9">⭐ 9.0+</option>
+          </select>
+        </label>
+        <label class="text-sm">
+          <span class="block mb-1 text-gray-400">Language</span>
+          <select id="filter-language" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+            <option value="">Any</option>
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="ko">Korean</option>
+            <option value="ja">Japanese</option>
+            <option value="es">Spanish</option>
+          </select>
+        </label>
+        <label class="text-sm">
+          <span class="block mb-1 text-gray-400">Runtime</span>
+          <select id="filter-runtime" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2">
+            <option value="">Any</option>
+            <option value="short">&lt; 90 min</option>
+            <option value="medium">90-120 min</option>
+            <option value="long">&gt; 120 min</option>
+          </select>
+        </label>
+        <div class="md:col-span-2 flex items-center gap-3">
+          <button id="apply-filters" class="flex-1 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold">Apply
+            Filters</button>
+          <button id="reset-filters"
+            class="px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400 text-sm">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="max-w-6xl mx-auto p-4 space-y-8">
+    <section id="ai-banner"
+      class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold">AI Recommender ΓÇö Need a pick?</h3>
+        <p class="text-sm text-gray-400">Ask by mood, genre or actor.</p>
+      </div>
+      <div><a href="ai.html" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Open AI</a></div>
+    </section>
+
+    <section id="sort-showcase" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold">Featured Picks</h3>
+        <button id="clear-sort-showcase" class="text-sm text-red-400 hover:text-red-300">Clear</button>
+      </div>
+      <div id="sort-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </section>
+
+    <section id="filters-results" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold">≡ƒÄ» Filtered Matches</h3>
+        <button id="close-filters-results" class="text-sm text-red-400 hover:text-red-300">Close</button>
+      </div>
+      <div id="filters-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </section>
+
+    <section id="collections-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-4">
+      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h3 class="text-lg font-semibold">🎞️ Collections & Playlists</h3>
+          <p class="text-sm text-gray-400">Create shareable vibes like "Date Night" or "Horror Marathon".</p>
+        </div>
+        <button id="share-all-collections"
+          class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-500 text-sm">Share All</button>
+      </div>
+      <div class="grid gap-3 md:grid-cols-2">
+        <input id="collection-name" type="text" placeholder="Collection name e.g. Cozy Sundays"
+          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+        <input id="collection-description" type="text" placeholder="Short vibe or rules"
+          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+      </div>
+      <div class="flex gap-3 flex-col md:flex-row">
+        <select id="collection-visibility" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 flex-1">
+          <option value="private">Private</option>
+          <option value="friends">Friends</option>
+          <option value="public">Public</option>
+        </select>
+        <button id="create-collection" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">Create
+          Collection</button>
+      </div>
+      <div id="collections-list" class="grid gap-4 md:grid-cols-2"></div>
+    </section>
+
+    <section id="page-home" class="spa-page space-y-10">
+      <div id="sections-container" class="space-y-10"></div>
+    </section>
+
+    <section id="page-all" class="spa-page hidden">
+      <div class="flex justify-between items-center mb-3">
+        <h2 id="all-title" class="text-xl font-semibold"></h2>
+        <button id="back-home" class="text-red-500 hover:underline">← Back to Home</button>
+      </div>
+      <div id="all-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </section>
+
+    <section id="page-search" class="spa-page hidden">
+      <h2 class="text-xl font-semibold mb-3">🔍 Search Results</h2>
+      <div id="search-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div class="bg-gray-900 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 overflow-y-auto max-h-[90vh] relative">
+      <button id="close-modal" class="absolute top-4 right-6 text-2xl text-white hover:text-red-500">✕</button>
+      <div id="modal-content" class="p-4 modal-body"></div>
+    </div>
+  </div>
+
+  <!-- load main app logic -->
+  <script src="main.js" defer></script>
+
+  <!-- Auth Gate: Check if user is logged in or guest -->
+  <script type="module">
+    import { waitForFirebase } from './firebase-config.js';
+
+    console.log('⏳ Checking authentication...');
+
+    try {
+      await waitForFirebase();
+      const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+
+      const auth = window.authMod;
+      const isGuest = localStorage.getItem('ourshow_guest') === 'true';
+
+      onAuthStateChanged(auth, (user) => {
+        console.log('👤 User:', user ? user.email : 'Not logged in', '| Guest:', isGuest);
+
+        if (!user && !isGuest) {
+          console.log('≡ƒÜ½ No auth - redirecting to login...');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        window.isAuthenticated = !!user;
+        window.currentUser = user;
+
+        if (!user) {
+          const postLink = document.querySelector('a[href="post.html"]');
+          const communityLink = document.querySelector('a[href="community.html"]');
+          const aiLink = document.querySelector('a[href="ai.html"]');
+          const aiBanner = document.getElementById('ai-banner');
+
+          if (postLink) postLink.style.opacity = '0.5';
+          if (communityLink) communityLink.style.opacity = '0.5';
+          if (aiLink) aiLink.style.opacity = '0.5';
+          if (aiBanner) aiBanner.style.opacity = '0.5';
+
+          const restrictedPages = ['post.html', 'community.html', 'ai.html'];
+          if (restrictedPages.some(p => window.location.pathname.includes(p))) {
+            alert('⚠️ This feature requires login. Please sign in to continue.');
+            window.location.href = 'login.html';
+          }
+        }
+
+        const profileName = document.getElementById('profile-name');
+        const profilePic = document.getElementById('profile-pic');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mobileName = document.getElementById('mobile-profile-name');
+        const mobileEmail = document.getElementById('mobile-profile-email');
+        const mobilePic = document.getElementById('mobile-profile-pic');
+        const mobileEdit = document.getElementById('mobile-edit-profile');
+        mobileEdit?.addEventListener('click', () => window.location.href = 'profile.html');
+
+        if (user) {
+          profileName.textContent = user.displayName || 'User';
+          if (user.photoURL) profilePic.src = user.photoURL;
+          if (mobileName) mobileName.textContent = user.displayName || 'User';
+          if (mobileEmail) mobileEmail.textContent = user.email || '';
+          if (mobilePic && user.photoURL) mobilePic.src = user.photoURL;
+
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+              await auth.signOut();
+              localStorage.removeItem('ourshow_guest');
+              window.location.href = 'login.html';
+            });
+          }
+        } else if (isGuest) {
+          profileName.textContent = 'Guest';
+          if (mobileName) mobileName.textContent = 'Guest';
+          if (mobileEmail) mobileEmail.textContent = 'Sign in for sync';
+          if (mobilePic) mobilePic.src = 'https://via.placeholder.com/64';
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+              localStorage.removeItem('ourshow_guest');
+              window.location.href = 'login.html';
+            });
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error('❌ Firebase auth check failed:', err);
+      const isGuest = localStorage.getItem('ourshow_guest') === 'true';
+      if (!isGuest) {
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+
+  <script>
+    // tiny UI wiring (header)
+    (function () {
+      const menuBtn = document.getElementById('menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const closeMobile = document.getElementById('close-mobile');
+      const profileBtn = document.getElementById('profile-btn');
+      const profileDropdown = document.getElementById('profile-dropdown');
+      const collectionsBtn = document.getElementById('collections-link');
+      const collectionsBtnMobile = document.getElementById('collections-link-mobile');
+
+      menuBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+      closeMobile?.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      profileBtn?.addEventListener('click', () => profileDropdown.classList.toggle('hidden'));
+      document.addEventListener('click', (e) => {
+        if (profileBtn && profileDropdown && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.add('hidden');
+        }
+      });
+
+      function goToCollections(fromMobile = false) {
+        const scrolled = typeof window.scrollToCollectionsSection === 'function' && window.scrollToCollectionsSection();
+        if (!scrolled) {
+          if (fromMobile) mobileMenu?.classList.add('hidden');
+          window.location.href = 'index.html#collections';
+        } else if (fromMobile) {
+          mobileMenu?.classList.add('hidden');
+        }
+      }
+
+      collectionsBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        goToCollections(false);
+      });
+      collectionsBtnMobile?.addEventListener('click', (e) => {
+        e.preventDefault();
+        goToCollections(true);
+      });
+    })();
+  </script>
+
+  <!-- ✅ PWA Install Script -->
+  <script src="pwa-install.js"></script>
+</body>
+
+</html>
