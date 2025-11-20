@@ -280,7 +280,9 @@ async function saveItemUpdate(item) {
 // Enrich watched items with missing data (runtime/episodes)
 async function enrichWatchedItems() {
   console.log('✨ Enriching watched items with TMDB data...');
+  console.log(`📊 Total items to check: ${watchedItems.length}`);
   let updated = false;
+  let enrichedCount = 0;
 
   // Helper to delay to avoid rate limits
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -292,32 +294,47 @@ async function enrichWatchedItems() {
 
     try {
       if (type === 'movie') {
-        // Check if runtime is missing or default (120)
-        if (!item.runtime || item.runtime === 120) {
+        // Fetch runtime if missing, invalid, or suspiciously default
+        const needsRuntime = !item.runtime || item.runtime === 120 || item.runtime === 0 || isNaN(item.runtime);
+
+        if (needsRuntime) {
+          console.log(`🎬 Fetching runtime for movie: ${item.title || item.name} (ID: ${item.id})`);
           if (typeof tmdbFetch === 'function') {
             const details = await tmdbFetch(`/movie/${item.id}`);
-            if (details && details.runtime) {
+            if (details && details.runtime && details.runtime > 0) {
               item.runtime = details.runtime;
               itemUpdated = true;
-              console.log(`Updated runtime for ${item.title}: ${item.runtime}m`);
+              enrichedCount++;
+              console.log(`✅ Updated runtime for ${item.title}: ${item.runtime} minutes`);
+            } else {
+              console.warn(`⚠️ No valid runtime found for ${item.title}`);
             }
           }
         }
       } else if (type === 'tv' || type === 'series') {
-        // Check if episodes count is missing or default (10)
-        if (!item.number_of_episodes || item.number_of_episodes === 10) {
+        // Fetch episodes if missing, invalid, or suspiciously default
+        const needsEpisodes = !item.number_of_episodes || item.number_of_episodes === 10 || item.number_of_episodes === 0 || isNaN(item.number_of_episodes);
+
+        if (needsEpisodes) {
+          console.log(`📺 Fetching episodes for series: ${item.name || item.title} (ID: ${item.id})`);
           if (typeof tmdbFetch === 'function') {
             const details = await tmdbFetch(`/tv/${item.id}`);
-            if (details && details.number_of_episodes) {
+            if (details && details.number_of_episodes && details.number_of_episodes > 0) {
               item.number_of_episodes = details.number_of_episodes;
-              // Also get runtime if possible (average runtime)
+
+              // Also get average episode runtime
               if (details.episode_run_time && details.episode_run_time.length > 0) {
-                // Average of runtimes
                 const avg = details.episode_run_time.reduce((a, b) => a + b, 0) / details.episode_run_time.length;
                 item.runtime = Math.round(avg);
+                console.log(`✅ Updated ${item.name || item.title}: ${item.number_of_episodes} episodes, ${item.runtime}min avg`);
+              } else {
+                console.log(`✅ Updated ${item.name || item.title}: ${item.number_of_episodes} episodes`);
               }
+
               itemUpdated = true;
-              console.log(`Updated episodes for ${item.name || item.title}: ${item.number_of_episodes}`);
+              enrichedCount++;
+            } else {
+              console.warn(`⚠️ No valid episode count found for ${item.name || item.title}`);
             }
           }
         }
@@ -327,13 +344,14 @@ async function enrichWatchedItems() {
         await saveItemUpdate(item);
         updated = true;
         // Small delay to be nice to API
-        await delay(200);
+        await delay(250);
       }
     } catch (err) {
-      console.error(`Error enriching item ${item.title}:`, err);
+      console.error(`❌ Error enriching item ${item.title || item.name}:`, err);
     }
   }
 
+  console.log(`🎉 Enrichment complete! Updated ${enrichedCount} items.`);
   return updated;
 }
 

@@ -551,7 +551,7 @@ async function fetchHindiSeriesDetail(entry) {
   return null;
 }
 
-window.scrollReviewsIntoView = function() {
+window.scrollReviewsIntoView = function () {
   const reviewsSection = document.getElementById('reviews-section');
   if (!reviewsSection) return;
   reviewsSection.scrollIntoView({ behavior: 'smooth' });
@@ -606,7 +606,7 @@ function makeCard(item, type = "movie") {
   const year = (item.release_date || item.first_air_date || "N/A").split("-")[0];
   const rating = item.vote_average ? item.vote_average.toFixed(1) : "N/A";
   const pop = item.popularity ? Math.round(item.popularity) : "N/A";
-  
+
   const img = item.poster_path
     ? `${IMAGE}/w500${item.poster_path}`
     : SAFE_PLACEHOLDER;
@@ -615,7 +615,7 @@ function makeCard(item, type = "movie") {
   const isNew = year === "2024" || year === "2023";
   const isTrending = item.popularity > 100;
   const isHighRated = item.vote_average >= 8.0;
-  
+
   let badges = '';
   if (isNew) badges += '<span class="badge bg-green-600">NEW</span>';
   if (isTrending) badges += '<span class="badge bg-red-600">🔥 TRENDING</span>';
@@ -665,89 +665,145 @@ function makeCard(item, type = "movie") {
     EXPANDED SECTIONS WITH SMART CATEGORIES
 ----------------------------------------------------- */
 const SECTIONS = [
-  { id:"quick-watch", title:"⚡ Quick Watch (Under 90 Minutes)",
-    endpoint:"/discover/movie?with_runtime.lte=90&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "quick-watch", title: "⚡ Quick Watch (Under 90 Minutes)",
+    endpoint: "/discover/movie?with_runtime.lte=90&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"best-hindi-movies", title:"🇮🇳 Best Hindi Movies (Bollywood)",
-    endpoint:"/discover/movie?with_original_language=hi&sort_by=vote_average.desc&vote_count.gte=100", type:"movie" },
+  {
+    id: "best-hindi-movies", title: "🇮🇳 Best Hindi Movies (Bollywood)",
+    endpoint: "/discover/movie?with_original_language=hi&sort_by=vote_average.desc&vote_count.gte=100", type: "movie"
+  },
 
-  { id:"hindi-premieres", title:"🇮🇳 Fresh Hindi Premieres",
-    endpoint:"/discover/movie?with_original_language=hi&sort_by=primary_release_date.desc&primary_release_date.gte=2023-01-01", type:"movie" },
+  {
+    id: "hindi-premieres", title: "🇮🇳 Fresh Hindi Premieres",
+    endpoint: "/discover/movie?with_original_language=hi&sort_by=primary_release_date.desc&primary_release_date.gte=2023-01-01", type: "movie"
+  },
 
-  { id:"trending-movies", title:"🔥 Trending Movies This Week",
-    endpoint:"/trending/movie/week", type:"movie" },
+  {
+    id: "trending-movies", title: "🔥 Trending Movies This Week",
+    endpoint: "/trending/movie/week", type: "movie"
+  },
 
-  { id:"trending-tv", title:"📺 Trending TV Shows This Week",
-    endpoint:"/trending/tv/week", type:"tv" },
+  {
+    id: "trending-tv", title: "📺 Trending TV Shows This Week",
+    endpoint: "/trending/tv/week", type: "tv"
+  },
 
-  { id:"hindi-series", title:"🇮🇳 Best Hindi OTT Series",
-    type:"tv", custom:"hindi-ott-curated" },
+  {
+    id: "hindi-series", title: "🇮🇳 Best Hindi OTT Series",
+    type: "tv", custom: "hindi-ott-curated"
+  },
 
-  { id:"top-rated-movies", title:"⭐ Top Rated Movies of All Time",
-    endpoint:"/movie/top_rated", type:"movie" },
+  {
+    id: "top-rated-movies", title: "⭐ Top Rated Movies of All Time",
+    endpoint: "/movie/top_rated", type: "movie"
+  },
 
-  { id:"top-rated-tv", title:"⭐ Top Rated TV Shows",
-    endpoint:"/tv/top_rated", type:"tv" },
+  {
+    id: "top-rated-tv", title: "⭐ Top Rated TV Shows",
+    endpoint: "/tv/top_rated", type: "tv"
+  },
 
-  { id:"popular-movies", title:"🎬 Popular Movies Right Now",
-    endpoint:"/movie/popular", type:"movie" },
+  {
+    id: "popular-movies", title: "🎬 Popular Movies Right Now",
+    endpoint: "/movie/popular", type: "movie"
+  },
 
-  { id:"popular-tv", title:"📺 Popular TV Shows",
-    endpoint:"/tv/popular", type:"tv" },
+  {
+    id: "popular-tv", title: "📺 Popular TV Shows",
+    endpoint: "/tv/popular", type: "tv"
+  },
 
-  { id:"best-english-movies", title:"🇺🇸 Best English Movies",
-    endpoint:"/discover/movie?with_original_language=en&sort_by=vote_average.desc&vote_count.gte=1000", type:"movie" },
+  {
+    id: "best-english-movies", title: "🇺🇸 Best English Movies",
+    endpoint: "/discover/movie?with_original_language=en&sort_by=vote_average.desc&vote_count.gte=1000", type: "movie"
+  },
 
-  { id:"best-english-series", title:"🇬🇧 Best English Series",
-    endpoint:"/discover/tv?with_original_language=en&sort_by=vote_average.desc&vote_count.gte=500", type:"tv" },
+  {
+    id: "best-english-series", title: "🇬🇧 Best English Series",
+    endpoint: "/discover/tv?with_original_language=en&sort_by=vote_average.desc&vote_count.gte=500", type: "tv"
+  },
 
-  { id:"best-kdrama", title:"🇰🇷 Best Korean Dramas (K-Drama)",
-    endpoint:"/discover/tv?with_original_language=ko&sort_by=vote_average.desc&vote_count.gte=100", type:"tv", pages: 5 },
+  {
+    id: "best-kdrama", title: "🇰🇷 Best Korean Dramas (K-Drama)",
+    endpoint: "/discover/tv?with_original_language=ko&sort_by=vote_average.desc&vote_count.gte=100", type: "tv", pages: 5
+  },
 
-  { id:"best-cdrama", title:"🇨🇳 Best Chinese Dramas (C-Drama)",
-    endpoint:"/discover/tv?with_original_language=zh&sort_by=vote_average.desc&vote_count.gte=50", type:"tv", pages: 5 },
+  {
+    id: "best-cdrama", title: "🇨🇳 Best Chinese Dramas (C-Drama)",
+    endpoint: "/discover/tv?with_original_language=zh&sort_by=vote_average.desc&vote_count.gte=50", type: "tv", pages: 5
+  },
 
-  { id:"japanese-anime", title:"🇯🇵 Japanese Anime Series",
-    endpoint:"/discover/tv?with_original_language=ja&with_genres=16&sort_by=popularity.desc", type:"tv" },
+  {
+    id: "japanese-anime", title: "🇯🇵 Japanese Anime Series",
+    endpoint: "/discover/tv?with_original_language=ja&with_genres=16&sort_by=popularity.desc", type: "tv"
+  },
 
-  { id:"action-movies", title:"💥 Action & Adventure Movies",
-    endpoint:"/discover/movie?with_genres=28,12&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "action-movies", title: "💥 Action & Adventure Movies",
+    endpoint: "/discover/movie?with_genres=28,12&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"comedy-movies", title:"😂 Comedy Movies",
-    endpoint:"/discover/movie?with_genres=35&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "comedy-movies", title: "😂 Comedy Movies",
+    endpoint: "/discover/movie?with_genres=35&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"horror-movies", title:"👻 Horror & Thriller Movies",
-    endpoint:"/discover/movie?with_genres=27,53&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "horror-movies", title: "👻 Horror & Thriller Movies",
+    endpoint: "/discover/movie?with_genres=27,53&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"romance-movies", title:"❤️ Romance Movies",
-    endpoint:"/discover/movie?with_genres=10749&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "romance-movies", title: "❤️ Romance Movies",
+    endpoint: "/discover/movie?with_genres=10749&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"scifi-movies", title:"🚀 Sci-Fi & Fantasy Movies",
-    endpoint:"/discover/movie?with_genres=878,14&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "scifi-movies", title: "🚀 Sci-Fi & Fantasy Movies",
+    endpoint: "/discover/movie?with_genres=878,14&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"crime-series", title:"🕵️ Crime & Mystery Series",
-    endpoint:"/discover/tv?with_genres=80,9648&sort_by=popularity.desc", type:"tv" },
+  {
+    id: "crime-series", title: "🕵️ Crime & Mystery Series",
+    endpoint: "/discover/tv?with_genres=80,9648&sort_by=popularity.desc", type: "tv"
+  },
 
-  { id:"documentary-series", title:"📽️ Documentary Series",
-    endpoint:"/discover/tv?with_genres=99&sort_by=popularity.desc", type:"tv" },
+  {
+    id: "documentary-series", title: "📽️ Documentary Series",
+    endpoint: "/discover/tv?with_genres=99&sort_by=popularity.desc", type: "tv"
+  },
 
-  { id:"movies-2024", title:"🎬 2024 Movies",
-    endpoint:"/discover/movie?primary_release_year=2024&sort_by=popularity.desc", type:"movie" },
+  {
+    id: "movies-2024", title: "🎬 2024 Movies",
+    endpoint: "/discover/movie?primary_release_year=2024&sort_by=popularity.desc", type: "movie"
+  },
 
-  { id:"movies-2023", title:"🎬 2023 Movies",
-    endpoint:"/discover/movie?primary_release_year=2023&sort_by=vote_average.desc&vote_count.gte=500", type:"movie" },
+  {
+    id: "movies-2023", title: "🎬 2023 Movies",
+    endpoint: "/discover/movie?primary_release_year=2023&sort_by=vote_average.desc&vote_count.gte=500", type: "movie"
+  },
 
-  { id:"upcoming-movies", title:"🆕 Upcoming Movies",
-    endpoint:"/movie/upcoming", type:"movie" },
+  {
+    id: "upcoming-movies", title: "🆕 Upcoming Movies",
+    endpoint: "/movie/upcoming", type: "movie"
+  },
 
-  { id:"now-playing", title:"🎥 Now Playing in Theaters",
-    endpoint:"/movie/now_playing", type:"movie" },
+  {
+    id: "now-playing", title: "🎥 Now Playing in Theaters",
+    endpoint: "/movie/now_playing", type: "movie"
+  },
 
-  { id:"airing-today", title:"📡 TV Shows Airing Today",
-    endpoint:"/tv/airing_today", type:"tv" },
+  {
+    id: "airing-today", title: "📡 TV Shows Airing Today",
+    endpoint: "/tv/airing_today", type: "tv"
+  },
 
-  { id:"classic-movies", title:"🎞️ Classic Movies (1980-2000)",
-    endpoint:"/discover/movie?primary_release_date.gte=1980-01-01&primary_release_date.lte=2000-12-31&sort_by=vote_average.desc&vote_count.gte=1000", type:"movie" }
+  {
+    id: "classic-movies", title: "🎞️ Classic Movies (1980-2000)",
+    endpoint: "/discover/movie?primary_release_date.gte=1980-01-01&primary_release_date.lte=2000-12-31&sort_by=vote_average.desc&vote_count.gte=1000", type: "movie"
+  }
 ];
 
 /* Helper to add page parameter safely */
@@ -759,7 +815,7 @@ function addPageParam(endpoint, page) {
 /* RENDER SECTION */
 async function renderSection(section) {
   const wrap = document.getElementById("sections-container");
-  
+
   const sectionDiv = document.createElement('div');
   sectionDiv.className = 'mb-10 section-wrapper';
   sectionDiv.id = `section-${section.id}`;
@@ -773,7 +829,7 @@ async function renderSection(section) {
       ${createSkeleton()}${createSkeleton()}${createSkeleton()}${createSkeleton()}
     </div>
   `;
-  
+
   wrap.appendChild(sectionDiv);
 
   const row = document.getElementById(`${section.id}-row`);
@@ -1250,7 +1306,7 @@ async function renderAllPage({ append = false } = {}) {
 /* ADD LOAD MORE BUTTON */
 function addLoadMoreButton() {
   const wrap = document.getElementById("sections-container");
-  
+
   const existingBtn = document.getElementById('load-more-btn');
   if (existingBtn) existingBtn.remove();
 
@@ -1262,7 +1318,7 @@ function addLoadMoreButton() {
       Load More Content 🎬
     </button>
   `;
-  
+
   wrap.appendChild(btnDiv);
   btnDiv.querySelector('button').addEventListener('click', loadMoreSections);
 }
@@ -1283,7 +1339,7 @@ async function loadMoreSections() {
   }
 
   document.getElementById('load-more-btn').remove();
-  
+
   if (LOADED_SECTIONS < SECTIONS.length) {
     addLoadMoreButton();
   } else {
@@ -1311,7 +1367,7 @@ window.addEventListener('scroll', () => {
   scrollTimeout = setTimeout(() => {
     const scrollPosition = window.innerHeight + window.scrollY;
     const pageHeight = document.documentElement.scrollHeight;
-    
+
     if (scrollPosition >= pageHeight * 0.8 && !IS_LOADING && LOADED_SECTIONS < SECTIONS.length) {
       loadMoreSections();
     }
@@ -1321,15 +1377,15 @@ window.addEventListener('scroll', () => {
 /* -----------------------------------------------------
     QUICK ADD FUNCTIONS
 ----------------------------------------------------- */
-window.quickAddToWatchlist = async function(id, title, type) {
+window.quickAddToWatchlist = async function (id, title, type) {
   const db = window.dbMod;
   const auth = window.authMod;
-  
+
   if (!auth || !auth.currentUser) {
     alert("Please log in to add to watchlist");
     return;
   }
-  
+
   const userId = auth.currentUser.uid;
 
   try {
@@ -1349,15 +1405,15 @@ window.quickAddToWatchlist = async function(id, title, type) {
   }
 };
 
-window.quickAddToWatchLater = async function(id, title, type) {
+window.quickAddToWatchLater = async function (id, title, type) {
   const db = window.dbMod;
   const auth = window.authMod;
-  
+
   if (!auth || !auth.currentUser) {
     alert("Please log in");
     return;
   }
-  
+
   const userId = auth.currentUser.uid;
 
   try {
@@ -1381,7 +1437,7 @@ function showToast(message) {
   toast.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-pulse';
   toast.textContent = message;
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.animation = 'fadeOut 0.5s ease-out';
     setTimeout(() => toast.remove(), 500);
@@ -1477,7 +1533,7 @@ window.launchWatchNow = function launchWatchNow() {
 /* -----------------------------------------------------
     RANDOM MOVIE FEATURE
 ----------------------------------------------------- */
-window.getRandomMovie = async function(forceType) {
+window.getRandomMovie = async function (forceType) {
   const type = forceType || (LAST_RANDOM_TYPE === 'movie' ? 'tv' : 'movie');
   LAST_RANDOM_TYPE = type;
   const label = type === 'movie' ? 'movie' : 'series';
@@ -1689,29 +1745,29 @@ function setupFiltersPanel() {
   closeBtn?.addEventListener('click', () => {
     document.getElementById('filters-results')?.classList.add('hidden');
   });
-  
+
   applyBtn.addEventListener('click', (e) => {
     e.preventDefault();
     console.log('[Filter] Apply button clicked');
     applyFiltersFromPanel({ sourceBtn: applyBtn });
   });
-  
+
   resetBtn?.addEventListener('click', () => {
-    ['genre','year','rating','language','runtime','type'].forEach(key => {
+    ['genre', 'year', 'rating', 'language', 'runtime', 'type'].forEach(key => {
       const el = document.getElementById(`filter-${key}`);
       if (el) el.value = key === 'type' ? 'both' : '';
     });
     document.getElementById('filters-results')?.classList.add('hidden');
-     updateFiltersSummaryDisplay({
-       genre: '',
-       year: '',
-       rating: '',
-       language: '',
-       runtime: '',
-       type: 'both'
-     });
+    updateFiltersSummaryDisplay({
+      genre: '',
+      year: '',
+      rating: '',
+      language: '',
+      runtime: '',
+      type: 'both'
+    });
   });
-  
+
   console.log('[Filter] Filter panel setup complete');
 }
 
@@ -1810,19 +1866,19 @@ async function applyFiltersFromPanel(options = {}) {
       .slice(0, 30);
     console.log(`[Filter] Results after filtering banned items: ${filteredItems.length}`);
     filteredItems.forEach(cacheTitle);
-    
+
     if (filteredItems.length === 0) {
       grid.innerHTML = `<p class="text-gray-400 text-sm text-center py-4">No family-safe matches found. Try adjusting your filters.</p>`;
       return;
     }
-    
+
     grid.innerHTML = filteredItems.map(item => makeCard(item, item.media_type || 'movie')).join('');
     console.log(`[Filter] Successfully displayed ${filteredItems.length} filtered items`);
     if (meta) {
       meta.textContent = `${filteredItems.length} curated match${filteredItems.length === 1 ? '' : 'es'} across ${typesToSearch.includes('movie') && typesToSearch.includes('tv') ? 'movies & series' : typesToSearch[0] === 'movie' ? 'movies' : 'series'}.`;
     }
     scrollToFiltersResults();
-    
+
   } catch (error) {
     console.error('[Filter] Unexpected error:', error);
     grid.innerHTML = `<p class="text-red-400 text-sm text-center py-4">Error: ${error.message || 'Failed to load results'}. Please try again.</p>`;
@@ -1920,7 +1976,7 @@ function setupCollectionsActions() {
   });
 }
 
-window.shareCollection = function(collectionId) {
+window.shareCollection = function (collectionId) {
   const collection = COLLECTIONS.find(c => c.id === collectionId);
   if (!collection) return;
   const text = `🎬 ${collection.name} on OurShow\n${collection.description || ''}\nTitles: ${(collection.items || []).length}`;
@@ -1932,7 +1988,7 @@ window.shareCollection = function(collectionId) {
   }
 };
 
-window.copyCollectionLink = function(collectionId) {
+window.copyCollectionLink = function (collectionId) {
   const url = `${window.location.origin}/?collection=${collectionId}`;
   copyToClipboard(url);
   showToast('Shareable link copied!');
@@ -1950,7 +2006,7 @@ function copyToClipboard(text) {
 }
 
 function attachCollectionPicker() {
-  window.openCollectionPicker = function() {
+  window.openCollectionPicker = function () {
     const picker = document.getElementById('collection-picker');
     if (!picker) return;
     renderCollectionPicker();
@@ -1959,7 +2015,7 @@ function attachCollectionPicker() {
 }
 
 /* SHARE */
-window.shareCurrent = function(target) {
+window.shareCurrent = function (target) {
   const item = window.currentModalItem;
   if (!item) return;
   const url = `${window.location.origin}/?media=${item.type}&id=${item.id}`;
@@ -1987,7 +2043,7 @@ window.shareCurrent = function(target) {
   if (routes[target]) {
     window.open(routes[target], '_blank');
   } else if (navigator.share) {
-    navigator.share({ title: item.title, text, url }).catch(()=>copyToClipboard(text));
+    navigator.share({ title: item.title, text, url }).catch(() => copyToClipboard(text));
   } else {
     copyToClipboard(text);
   }
@@ -2009,7 +2065,7 @@ function renderCollectionPicker() {
   `).join('');
 }
 
-window.addItemToCollection = function(collectionId) {
+window.addItemToCollection = function (collectionId) {
   const item = window.currentModalItem;
   if (!item) return alert('Open a movie/show first.');
   const collection = COLLECTIONS.find(c => c.id === collectionId);
@@ -2033,11 +2089,11 @@ window.addItemToCollection = function(collectionId) {
 /* ASK AI */
 let aiBusy = false;
 
-window.toggleAiPanel = function() {
+window.toggleAiPanel = function () {
   document.getElementById('ai-panel')?.classList.toggle('hidden');
 };
 
-window.askAiAboutCurrent = async function(promptText) {
+window.askAiAboutCurrent = async function (promptText) {
   if (aiBusy) return;
   const item = window.currentModalItem;
   const chatBody = document.getElementById('ai-chat-body');
@@ -2130,7 +2186,7 @@ function markNotificationsRead() {
   if (db) {
     const updates = {};
     NOTIFICATIONS.forEach(note => updates[note.id] = { ...note, read: true });
-    update(ref(db, `ourshow/notifications/${userId}`), updates).catch(()=>{});
+    update(ref(db, `ourshow/notifications/${userId}`), updates).catch(() => { });
   }
 }
 
@@ -2254,7 +2310,7 @@ document.body.addEventListener("click", async (e) => {
 async function openModal(id, type) {
   // Add to recently viewed
   addToRecentlyViewed(id, type);
-  
+
   const res = await tmdbFetch(`/${type}/${id}?append_to_response=videos,credits,similar`);
   if (!res) {
     modalContent.innerHTML = `<p class="text-red-500">Failed to load details.</p>`;
@@ -2427,27 +2483,27 @@ async function openModal(id, type) {
   }
 
   modal.classList.remove("hidden");
-  
+
   // Load existing reviews
   loadReviewsInModal(id);
 }
 
 /* SELECT QUICK RATING */
-window.selectQuickRating = function(rating) {
+window.selectQuickRating = function (rating) {
   document.getElementById('quick-rating-value').value = rating;
-  
+
   // Visual feedback - highlight selected button
   document.querySelectorAll('.quick-rating-btn').forEach(btn => {
     btn.classList.remove('bg-red-600');
     btn.classList.add('bg-gray-700');
   });
-  
+
   event.target.classList.remove('bg-gray-700');
   event.target.classList.add('bg-red-600');
 };
 
 /* SUBMIT FULL REVIEW */
-window.submitFullReview = async function() {
+window.submitFullReview = async function () {
   const item = window.currentModalItem;
   if (!item) return alert("No item selected");
 
@@ -2462,7 +2518,7 @@ window.submitFullReview = async function() {
   const userId = window.authMod?.currentUser?.uid;
   const userName = window.authMod?.currentUser?.displayName || "Anonymous";
   const userEmail = window.authMod?.currentUser?.email || "";
-  
+
   if (!userId) {
     return alert("Please log in to submit a review");
   }
@@ -2482,7 +2538,7 @@ window.submitFullReview = async function() {
     });
 
     showToast("✅ Review submitted successfully!");
-    
+
     // Clear form
     document.getElementById("quick-rating-value").value = "";
     document.getElementById("review-text").value = "";
@@ -2491,7 +2547,7 @@ window.submitFullReview = async function() {
       btn.classList.remove('bg-red-600');
       btn.classList.add('bg-gray-700');
     });
-    
+
     // Reload reviews
     loadReviewsInModal(item.id);
   } catch (error) {
@@ -2501,10 +2557,10 @@ window.submitFullReview = async function() {
 };
 
 /* LOAD REVIEWS IN MODAL */
-window.loadReviewsInModal = async function(id) {
+window.loadReviewsInModal = async function (id) {
   const db = window.dbMod;
   const reviewsList = document.getElementById("reviews-list");
-  
+
   if (!db) {
     reviewsList.innerHTML = '<p class="text-gray-400 text-sm">Database not available</p>';
     return;
@@ -2513,7 +2569,7 @@ window.loadReviewsInModal = async function(id) {
   try {
     const reviewsRef = ref(db, `ourshow/reviews/${id}`);
     const snapshot = await get(reviewsRef);
-    
+
     if (!snapshot.exists()) {
       reviewsList.innerHTML = '<p class="text-gray-400 text-sm">No reviews yet. Be the first to review!</p>';
       return;
@@ -2535,7 +2591,7 @@ window.loadReviewsInModal = async function(id) {
       const isOwn = window.authMod?.currentUser?.uid === review.userId;
       const likeCount = review.likes || 0;
       const hasLiked = window.authMod?.currentUser?.uid && review.likedBy && review.likedBy[window.authMod.currentUser.uid];
-      
+
       return `
         <div class="review-item bg-gray-700/50 p-4 rounded-lg mb-3 border border-gray-600">
           <div class="flex items-start justify-between mb-2">
@@ -2604,10 +2660,10 @@ window.loadReviewsInModal = async function(id) {
 };
 
 /* LIKE REVIEW */
-window.likeReview = async function(movieId, reviewId) {
+window.likeReview = async function (movieId, reviewId) {
   const db = window.dbMod;
   const userId = window.authMod?.currentUser?.uid;
-  
+
   if (!userId) {
     return alert("Please log in to like reviews");
   }
@@ -2615,13 +2671,13 @@ window.likeReview = async function(movieId, reviewId) {
   try {
     const { runTransaction } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js');
     const reviewRef = ref(db, `ourshow/reviews/${movieId}/${reviewId}`);
-    
+
     let addedLike = false;
     const result = await runTransaction(reviewRef, (review) => {
       if (review) {
         if (!review.likedBy) review.likedBy = {};
         if (!review.likes) review.likes = 0;
-        
+
         if (review.likedBy[userId]) {
           // Unlike
           delete review.likedBy[userId];
@@ -2635,7 +2691,7 @@ window.likeReview = async function(movieId, reviewId) {
       }
       return review;
     });
-    
+
     if (addedLike) {
       const updated = result.snapshot?.val();
       const ownerId = updated?.userId;
@@ -2653,18 +2709,18 @@ window.likeReview = async function(movieId, reviewId) {
 };
 
 /* DELETE REVIEW */
-window.deleteReview = async function(movieId, reviewId) {
+window.deleteReview = async function (movieId, reviewId) {
   if (!confirm("Are you sure you want to delete this review?")) return;
-  
+
   const db = window.dbMod;
   const userId = window.authMod?.currentUser?.uid;
-  
+
   if (!userId) return;
 
   try {
     const reviewRef = ref(db, `ourshow/reviews/${movieId}/${reviewId}`);
     const snapshot = await get(reviewRef);
-    
+
     if (snapshot.exists() && snapshot.val().userId === userId) {
       await remove(reviewRef);
       showToast("✅ Review deleted");
@@ -2676,10 +2732,10 @@ window.deleteReview = async function(movieId, reviewId) {
 };
 
 /* SHOW COMMENTS */
-window.showComments = async function(movieId, reviewId) {
+window.showComments = async function (movieId, reviewId) {
   const commentsDiv = document.getElementById(`comments-${reviewId}`);
   commentsDiv.classList.toggle('hidden');
-  
+
   if (!commentsDiv.classList.contains('hidden')) {
     await loadComments(movieId, reviewId);
   }
@@ -2689,11 +2745,11 @@ window.showComments = async function(movieId, reviewId) {
 async function loadComments(movieId, reviewId) {
   const db = window.dbMod;
   const commentsList = document.getElementById(`comments-list-${reviewId}`);
-  
+
   try {
     const commentsRef = ref(db, `ourshow/reviews/${movieId}/${reviewId}/comments`);
     const snapshot = await get(commentsRef);
-    
+
     if (!snapshot.exists()) {
       commentsList.innerHTML = '<p class="text-gray-500 text-xs">No comments yet</p>';
       return;
@@ -2735,18 +2791,18 @@ async function loadComments(movieId, reviewId) {
 }
 
 /* ADD COMMENT */
-window.addComment = async function(movieId, reviewId) {
+window.addComment = async function (movieId, reviewId) {
   const db = window.dbMod;
   const userId = window.authMod?.currentUser?.uid;
   const userName = window.authMod?.currentUser?.displayName || "Anonymous";
-  
+
   if (!userId) {
     return alert("Please log in to comment");
   }
 
   const input = document.getElementById(`comment-input-${reviewId}`);
   const text = input.value.trim();
-  
+
   if (!text) return;
 
   try {
@@ -2757,7 +2813,7 @@ window.addComment = async function(movieId, reviewId) {
       userName: userName,
       time: Date.now()
     });
-    
+
     input.value = '';
     await notifyReviewParticipants(movieId, reviewId, userName, userId);
     await loadComments(movieId, reviewId);
@@ -2767,16 +2823,16 @@ window.addComment = async function(movieId, reviewId) {
 };
 
 /* DELETE COMMENT */
-window.deleteComment = async function(movieId, reviewId, commentId) {
+window.deleteComment = async function (movieId, reviewId, commentId) {
   const db = window.dbMod;
   const userId = window.authMod?.currentUser?.uid;
-  
+
   if (!userId) return;
 
   try {
     const commentRef = ref(db, `ourshow/reviews/${movieId}/${reviewId}/comments/${commentId}`);
     const snapshot = await get(commentRef);
-    
+
     if (snapshot.exists() && snapshot.val().userId === userId) {
       await remove(commentRef);
       await loadComments(movieId, reviewId);
@@ -2813,58 +2869,66 @@ async function notifyReviewParticipants(movieId, reviewId, actorName, excludeUse
 /* -----------------------------------------------------
     WATCHLIST & WATCH LATER FUNCTIONS
 ----------------------------------------------------- */
-window.addToWatchlist = async function() {
+window.addToWatchlist = async function () {
   const item = window.currentModalItem;
   if (!item) return alert("No item selected");
 
   const db = window.dbMod;
   const auth = window.authMod;
-  
+
   if (!auth || !auth.currentUser) {
     return alert("Please log in to add to watchlist");
   }
-  
+
   const userId = auth.currentUser.uid;
 
   try {
     if (!ref || !set) await initModularFirebase();
 
     const watchlistRef = ref(db, `ourshow/users/${userId}/watchlist/${item.id}`);
-    
+
     const itemData = {
       id: item.id,
       title: item.title,
-      type: item.type || 'movie',
+      name: item.name || item.title, // For TV shows
+      type: item.type || item.media_type || 'movie',
       posterUrl: item.posterUrl || '',
       overview: item.overview || '',
       year: item.year || 'N/A',
       rating: item.rating || 0,
       popularity: item.popularity || 0,
+      runtime: item.runtime || null, // Include runtime
+      number_of_episodes: item.number_of_episodes || null, // Include episode count
+      media_type: item.media_type || item.type || 'movie',
       time: Date.now()
     };
-    
+
     await set(watchlistRef, itemData);
 
     const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
     localWatchlist[item.id] = itemData;
     localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
 
-    showToast(`✅ Added "${item.title}" to Watchlist`);
+    showToast(`✅ Added "${item.title || item.name}" to Watchlist`);
     updateWatchlistCount();
   } catch (error) {
     console.error("Watchlist error:", error);
-    
+
     try {
       const localWatchlist = JSON.parse(localStorage.getItem('ourshow_watchlist') || '{}');
       localWatchlist[item.id] = {
         id: item.id,
         title: item.title,
-        type: item.type || 'movie',
+        name: item.name || item.title,
+        type: item.type || item.media_type || 'movie',
         posterUrl: item.posterUrl || '',
+        runtime: item.runtime || null,
+        number_of_episodes: item.number_of_episodes || null,
+        media_type: item.media_type || item.type || 'movie',
         time: Date.now()
       };
       localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
-      showToast(`✅ Added "${item.title}" to Watchlist (saved locally)`);
+      showToast(`✅ Added "${item.title || item.name}" to Watchlist (saved locally)`);
       updateWatchlistCount();
     } catch (localError) {
       alert("Failed to add to watchlist");
@@ -2872,13 +2936,13 @@ window.addToWatchlist = async function() {
   }
 };
 
-window.addToWatchLater = async function() {
+window.addToWatchLater = async function () {
   const item = window.currentModalItem;
   if (!item) return alert("No item selected");
 
   const db = window.dbMod;
   const userId = window.authMod?.currentUser?.uid;
-  
+
   if (!userId) {
     return alert("Please log in to add to watch later");
   }
@@ -2915,7 +2979,7 @@ window.addToWatchLater = async function() {
   }
 };
 
-window.markAsWatchedFromModal = async function() {
+window.markAsWatchedFromModal = async function () {
   const item = window.currentModalItem;
   if (!item) return alert("No item selected");
 
@@ -2936,7 +3000,7 @@ window.markAsWatchedFromModal = async function() {
         genres: item.genres || []
       }
     );
-    
+
     if (success) {
       showToast(`✅ Marked "${item.title || item.name}" as Watched`);
       if (window.loadWatchedItems) window.loadWatchedItems();
@@ -2984,19 +3048,19 @@ function addToRecentlyViewed(id, type) {
 document.addEventListener('keydown', (e) => {
   // Ignore if typing in input
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  
+
   // '/' to focus search
   if (e.key === '/') {
     e.preventDefault();
     document.getElementById('search-input')?.focus();
   }
-  
+
   // 'R' for random movie
   if (e.key === 'r' || e.key === 'R') {
     e.preventDefault();
     getRandomMovie();
   }
-  
+
   // 'Escape' to close modal
   if (e.key === 'Escape') {
     modal.classList.add('hidden');
@@ -3033,7 +3097,7 @@ async function init() {
     subscribeToNotifications();
     monitorWatchlistEpisodes();
   }, 1500);
-  
+
   console.log('🔍 Firebase Status:');
   console.log('- Database:', window.dbMod ? '✅' : '❌');
   console.log('- Auth:', window.authMod ? '✅' : '❌');
