@@ -487,8 +487,78 @@
             Show
           </div>
           <div class="text-xs text-gray-400 tracking-wide">
-            class="px-3 py-2 rounded-lg bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/30
-            transition-all duration-200 flex items-center gap-2">
+            🎬 discover • 💬 discuss • 🤖 recommend
+          </div>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-2">
+        <a href="ai.html"
+          class="px-4 py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>🤖</span>
+          <span class="font-semibold">AI</span>
+        </a>
+        <a href="post.html"
+          class="px-4 py-2 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>📝</span>
+          <span class="font-semibold">Posts</span>
+        </a>
+        <a href="community.html"
+          class="px-4 py-2 rounded-lg bg-green-600/20 hover:bg-green-600/40 border border-green-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>💬</span>
+          <span class="font-semibold">Chat</span>
+        </a>
+        <a href="watch&download.html"
+          class="px-4 py-2 rounded-lg bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>📥</span>
+          <span class="font-semibold">Download</span>
+        </a>
+        <a href="collection.html"
+          class="px-4 py-2 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 transition-all duration-200 flex items-center gap-2">
+          <span>🎛️</span>
+          <span class="font-semibold">Collections</span>
+        </a>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="hidden md:flex items-center gap-3">
+        <button id="surprise-btn-header"
+          class="px-4 py-2 rounded-lg bg-orange-600/20 hover:bg-orange-600/40 border border-orange-500/40 text-sm font-semibold transition-all duration-200 flex items-center gap-2">
+          <span>🎲</span>
+          <span>Surprise Me</span>
+        </button>
+        <button id="install-app-btn"
+          class="hidden px-4 py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/40 text-sm font-semibold transition-colors duration-200 flex items-center gap-2">
+          <span>📱</span>
+          <span>Install App</span>
+        </button>
+        <div class="relative" id="notification-wrapper">
+          <button id="notification-bell"
+            class="relative px-3 py-2 rounded-lg bg-gray-700/60 hover:bg-gray-700 border border-gray-600 transition-all duration-200 flex items-center gap-2">
+            <span>🔔</span>
+            <span class="text-sm font-semibold">Alerts</span>
+            <span id="notification-count"
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
+          </button>
+          <div id="notifications-panel"
+            class="hidden absolute right-0 mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl w-72 overflow-hidden z-50">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+              <p class="font-semibold">Notifications</p>
+              <button id="mark-notifications-read" class="text-xs text-red-400 hover:text-red-300">Mark all</button>
+            </div>
+            <div id="notifications-list" class="max-h-80 overflow-y-auto divide-y divide-gray-800">
+              <p class="text-xs text-gray-400 px-4 py-4">No alerts yet. You’re all caught up!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Section -->
+      <nav class="hidden md:flex items-center gap-3">
+        <a href="watchlist.html" class="relative group">
+          <div
+            class="px-3 py-2 rounded-lg bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/30 transition-all duration-200 flex items-center gap-2">
             <span class="text-xl">⭐</span>
             <span id="watchlist-count"
               class="bg-yellow-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">0</span>
@@ -497,46 +567,48 @@
             class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Watchlist
           </span>
-      </a>
+        </a>
 
-      <a href="watchlater.html" class="relative group">
-        <div
-          class="px-3 py-2 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/30 transition-all duration-200 flex items-center gap-2">
-          <span class="text-xl">⏳</span>
-          <span id="watchlater-count" class="bg-cyan-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">0</span>
-        </div>
-        <span
-          class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Watch Later
-        </span>
-      </a>
+        <a href="watchlater.html" class="relative group">
+          <div
+            class="px-3 py-2 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/30 transition-all duration-200 flex items-center gap-2">
+            <span class="text-xl">⏳</span>
+            <span id="watchlater-count"
+              class="bg-cyan-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">0</span>
+          </div>
+          <span
+            class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Watch Later
+          </span>
+        </a>
 
-      <div id="profile-menu" class="ml-3 relative">
-        <button id="profile-btn"
-          class="flex items-center gap-2 bg-gray-700/50 hover:bg-gray-700 px-3 py-2 rounded-lg border border-gray-600/50 transition-all duration-200 hover:scale-105">
-          <img id="profile-pic" src="https://via.placeholder.com/36"
-            class="w-8 h-8 rounded-full border-2 border-red-500/50" alt="profile">
-          <span id="profile-name" class="text-sm font-semibold">Guest</span>
-          <span class="text-xs opacity-70">▼</span>
-        </button>
-        <div id="profile-dropdown"
-          class="hidden absolute right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl w-48 overflow-hidden">
-          <a href="profile.html" class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">👤</span>Edit Profile
-          </a>
-          <a href="watchlist.html" class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">⭐</span>My Watchlist
-          </a>
-          <a href="watchlater.html"
-            class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
-            <span class="mr-2">⏳</span>My Watch Later
-          </a>
-          <button id="logout-btn"
-            class="w-full text-left px-4 py-3 text-red-400 hover:bg-red-900/30 transition-colors font-semibold">
-            <span class="mr-2">🚪</span>Logout
+        <div id="profile-menu" class="ml-3 relative">
+          <button id="profile-btn"
+            class="flex items-center gap-2 bg-gray-700/50 hover:bg-gray-700 px-3 py-2 rounded-lg border border-gray-600/50 transition-all duration-200 hover:scale-105">
+            <img id="profile-pic" src="https://via.placeholder.com/36"
+              class="w-8 h-8 rounded-full border-2 border-red-500/50" alt="profile">
+            <span id="profile-name" class="text-sm font-semibold">Guest</span>
+            <span class="text-xs opacity-70">▼</span>
           </button>
+          <div id="profile-dropdown"
+            class="hidden absolute right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl w-48 overflow-hidden">
+            <a href="profile.html" class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
+              <span class="mr-2">👤</span>Edit Profile
+            </a>
+            <a href="watchlist.html"
+              class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
+              <span class="mr-2">⭐</span>My Watchlist
+            </a>
+            <a href="watchlater.html"
+              class="block px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700">
+              <span class="mr-2">⏳</span>My Watch Later
+            </a>
+            <button id="logout-btn"
+              class="w-full text-left px-4 py-3 text-red-400 hover:bg-red-900/30 transition-colors font-semibold">
+              <span class="mr-2">🚪</span>Logout
+            </button>
+          </div>
         </div>
-      </div>
       </nav>
 
       <!-- Mobile Menu Button -->
@@ -761,115 +833,115 @@
     </div>
   </div>
 
-  <!-- Main content -->
-  <main class="max-w-6xl mx-auto p-4 space-y-8">
-    <section id="ai-banner"
-      class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded flex items-center justify-between">
+  <!--Main content-- >
+      <main class="max-w-6xl mx-auto p-4 space-y-8">
+        <section id="ai-banner"
+          class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">AI Recommender — Need a pick?</h3>
+            <p class="text-sm text-gray-400">Ask by mood, genre or actor.</p>
+          </div>
+          <div><a href="ai.html" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Open AI</a></div>
+        </section>
+
+        <section id="sort-showcase" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold">Featured Picks</h3>
+            <button id="clear-sort-showcase" class="text-sm text-red-400 hover:text-red-300">Clear</button>
+          </div>
+          <div id="sort-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+        </section>
+
+        <section id="filters-results" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold">🎯 Filtered Matches</h3>
+            <button id="close-filters-results" class="text-sm text-red-400 hover:text-red-300">Close</button>
+          </div>
+          <p id="filters-meta" class="text-xs text-gray-500 mb-3 hidden"></p>
+          <div id="filters-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+        </section>
+
+        <section id="for-you-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-3">
+          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 class="text-lg font-semibold">🎯 For You</h3>
+              <p class="text-sm text-gray-400">Smart picks inspired by your watchlist & watch later.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="for-you-hint" class="text-xs text-gray-500 hidden">Showing curated fallback (start saving
+                titles!)</span>
+              <button id="refresh-for-you"
+                class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-400 text-sm">Refresh Mix</button>
+            </div>
+          </div>
+          <div id="for-you-empty"
+            class="hidden text-sm text-gray-400 bg-gray-800/60 border border-gray-700 rounded px-4 py-3">
+            Save a few titles to your watchlist or watch later to unlock personalized picks. For now, enjoy a trending
+            sampler.
+          </div>
+          <div id="for-you-row" class="flex overflow-x-auto space-x-3 pb-2">
+            <!-- dynamic -->
+  </div>
+  </section>
+
+  <section id="best-headings" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold">🏷️ Best Dramas & Movies Hub</h3>
+      <button id="best-headings-scroll" class="text-sm text-red-400 hover:text-red-300">See All Sections</button>
+    </div>
+    <div id="best-headings-row" class="flex overflow-x-auto gap-2 pb-2"></div>
+  </section>
+
+  <section id="collections-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-4">
+    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
       <div>
-        <h3 class="text-lg font-semibold">AI Recommender — Need a pick?</h3>
-        <p class="text-sm text-gray-400">Ask by mood, genre or actor.</p>
+        <h3 class="text-lg font-semibold">🎛️ Collections & Playlists</h3>
+        <p class="text-sm text-gray-400">Create shareable vibes like “Date Night” or “Horror Marathon”.</p>
       </div>
-      <div><a href="ai.html" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Open AI</a></div>
-    </section>
+      <button id="share-all-collections"
+        class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-500 text-sm">Share All</button>
+    </div>
+    <div class="grid gap-3 md:grid-cols-2">
+      <input id="collection-name" type="text" placeholder="Collection name e.g. Cozy Sundays"
+        class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+      <input id="collection-description" type="text" placeholder="Short vibe or rules"
+        class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+    </div>
+    <div class="flex gap-3 flex-col md:flex-row">
+      <select id="collection-visibility" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 flex-1">
+        <option value="private">Private</option>
+        <option value="friends">Friends</option>
+        <option value="public">Public</option>
+      </select>
+      <button id="create-collection" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">Create
+        Collection</button>
+    </div>
+    <div id="collections-list" class="grid gap-4 md:grid-cols-2"></div>
+  </section>
 
-    <section id="sort-showcase" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold">Featured Picks</h3>
-        <button id="clear-sort-showcase" class="text-sm text-red-400 hover:text-red-300">Clear</button>
-      </div>
-      <div id="sort-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
+  <section id="page-home" class="spa-page space-y-10">
+    <div id="sections-container" class="space-y-10"></div>
+  </section>
 
-    <section id="filters-results" class="hidden bg-gray-900/70 border border-gray-800 rounded-xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold">🎯 Filtered Matches</h3>
-        <button id="close-filters-results" class="text-sm text-red-400 hover:text-red-300">Close</button>
+  <section id="page-all" class="spa-page hidden">
+    <div class="flex justify-between items-center mb-3">
+      <h2 id="all-title" class="text-xl font-semibold"></h2>
+      <button id="back-home" class="text-red-500 hover:underline">‹ Back to Home</button>
+    </div>
+    <div id="contextual-filter-bar" class="hidden bg-gray-900/50 border border-gray-800 rounded-xl p-3 mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-xs uppercase tracking-wide text-gray-400">Contextual Genre Filters</p>
+        <span id="contextual-filter-description" class="text-xs text-gray-500"></span>
       </div>
-      <p id="filters-meta" class="text-xs text-gray-500 mb-3 hidden"></p>
-      <div id="filters-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
+      <div id="contextual-filter-pills" class="flex flex-wrap gap-2"></div>
+    </div>
+    <div id="all-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+  </section>
 
-    <section id="for-you-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-3">
-      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 class="text-lg font-semibold">🎯 For You</h3>
-          <p class="text-sm text-gray-400">Smart picks inspired by your watchlist & watch later.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span id="for-you-hint" class="text-xs text-gray-500 hidden">Showing curated fallback (start saving
-            titles!)</span>
-          <button id="refresh-for-you"
-            class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-400 text-sm">Refresh Mix</button>
-        </div>
-      </div>
-      <div id="for-you-empty"
-        class="hidden text-sm text-gray-400 bg-gray-800/60 border border-gray-700 rounded px-4 py-3">
-        Save a few titles to your watchlist or watch later to unlock personalized picks. For now, enjoy a trending
-        sampler.
-      </div>
-      <div id="for-you-row" class="flex overflow-x-auto space-x-3 pb-2">
-        <!-- dynamic -->
-      </div>
-    </section>
-
-    <section id="best-headings" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold">🏷️ Best Dramas & Movies Hub</h3>
-        <button id="best-headings-scroll" class="text-sm text-red-400 hover:text-red-300">See All Sections</button>
-      </div>
-      <div id="best-headings-row" class="flex overflow-x-auto gap-2 pb-2"></div>
-    </section>
-
-    <section id="collections-section" class="bg-gray-900/70 border border-gray-800 rounded-xl p-4 space-y-4">
-      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 class="text-lg font-semibold">🎛️ Collections & Playlists</h3>
-          <p class="text-sm text-gray-400">Create shareable vibes like “Date Night” or “Horror Marathon”.</p>
-        </div>
-        <button id="share-all-collections"
-          class="px-3 py-2 rounded-lg border border-gray-600 hover:border-red-500 text-sm">Share All</button>
-      </div>
-      <div class="grid gap-3 md:grid-cols-2">
-        <input id="collection-name" type="text" placeholder="Collection name e.g. Cozy Sundays"
-          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
-        <input id="collection-description" type="text" placeholder="Short vibe or rules"
-          class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
-      </div>
-      <div class="flex gap-3 flex-col md:flex-row">
-        <select id="collection-visibility" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 flex-1">
-          <option value="private">Private</option>
-          <option value="friends">Friends</option>
-          <option value="public">Public</option>
-        </select>
-        <button id="create-collection" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">Create
-          Collection</button>
-      </div>
-      <div id="collections-list" class="grid gap-4 md:grid-cols-2"></div>
-    </section>
-
-    <section id="page-home" class="spa-page space-y-10">
-      <div id="sections-container" class="space-y-10"></div>
-    </section>
-
-    <section id="page-all" class="spa-page hidden">
-      <div class="flex justify-between items-center mb-3">
-        <h2 id="all-title" class="text-xl font-semibold"></h2>
-        <button id="back-home" class="text-red-500 hover:underline">‹ Back to Home</button>
-      </div>
-      <div id="contextual-filter-bar" class="hidden bg-gray-900/50 border border-gray-800 rounded-xl p-3 mb-4">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Contextual Genre Filters</p>
-          <span id="contextual-filter-description" class="text-xs text-gray-500"></span>
-        </div>
-        <div id="contextual-filter-pills" class="flex flex-wrap gap-2"></div>
-      </div>
-      <div id="all-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
-
-    <section id="page-search" class="spa-page hidden">
-      <h2 class="text-xl font-semibold mb-3">🔎 Search Results</h2>
-      <div id="search-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-    </section>
+  <section id="page-search" class="spa-page hidden">
+    <h2 class="text-xl font-semibold mb-3">🔎 Search Results</h2>
+    <div id="search-content" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+  </section>
   </main>
 
   <!-- Modal -->
