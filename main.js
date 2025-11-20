@@ -551,7 +551,7 @@ async function fetchHindiSeriesDetail(entry) {
   return null;
 }
 
-window.scrollReviewsIntoView = function () {
+window.scrollReviewsIntoView = functi() {
   const reviewsSection = document.getElementById('reviews-section');
   if (!reviewsSection) return;
   reviewsSection.scrollIntoView({ behavior: 'smooth' });
@@ -811,33 +811,6 @@ function addPageParam(endpoint, page) {
   const sep = endpoint.includes("?") ? "&" : "?";
   return `${endpoint}${sep}page=${page}`;
 }
-
-/* RENDER HOME - Load all sections */
-async function renderHome() {
-  const container = document.getElementById('sections-container');
-  if (!container) {
-    console.error('sections-container not found!');
-    return;
-  }
-
-  // Clear existing content
-  container.innerHTML = '';
-
-  console.log('🎬 Loading sections...');
-
-  // Render all sections
-  for (const section of SECTIONS) {
-    try {
-      await renderSection(section);
-      LOADED_SECTIONS++;
-    } catch (error) {
-      console.error(`Error loading section ${section.id}:`, error);
-    }
-  }
-
-  console.log(`✅ Loaded ${LOADED_SECTIONS} sections`);
-}
-
 
 /* RENDER SECTION */
 async function renderSection(section) {
@@ -2917,16 +2890,12 @@ window.addToWatchlist = async function () {
     const itemData = {
       id: item.id,
       title: item.title,
-      name: item.name || item.title, // For TV shows
-      type: item.type || item.media_type || 'movie',
+      type: item.type || 'movie',
       posterUrl: item.posterUrl || '',
       overview: item.overview || '',
       year: item.year || 'N/A',
       rating: item.rating || 0,
       popularity: item.popularity || 0,
-      runtime: item.runtime || null, // Include runtime
-      number_of_episodes: item.number_of_episodes || null, // Include episode count
-      media_type: item.media_type || item.type || 'movie',
       time: Date.now()
     };
 
@@ -2936,7 +2905,7 @@ window.addToWatchlist = async function () {
     localWatchlist[item.id] = itemData;
     localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
 
-    showToast(`✅ Added "${item.title || item.name}" to Watchlist`);
+    showToast(`✅ Added "${item.title}" to Watchlist`);
     updateWatchlistCount();
   } catch (error) {
     console.error("Watchlist error:", error);
@@ -2946,16 +2915,12 @@ window.addToWatchlist = async function () {
       localWatchlist[item.id] = {
         id: item.id,
         title: item.title,
-        name: item.name || item.title,
-        type: item.type || item.media_type || 'movie',
+        type: item.type || 'movie',
         posterUrl: item.posterUrl || '',
-        runtime: item.runtime || null,
-        number_of_episodes: item.number_of_episodes || null,
-        media_type: item.media_type || item.type || 'movie',
         time: Date.now()
       };
       localStorage.setItem('ourshow_watchlist', JSON.stringify(localWatchlist));
-      showToast(`✅ Added "${item.title || item.name}" to Watchlist (saved locally)`);
+      showToast(`✅ Added "${item.title}" to Watchlist (saved locally)`);
       updateWatchlistCount();
     } catch (localError) {
       alert("Failed to add to watchlist");
