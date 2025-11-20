@@ -158,6 +158,68 @@ function getUserDisplayName() {
     return currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
 }
 
+// Handle follow user button click
+async function handleFollowUser(event, userId, userName) {
+    event.stopPropagation();
+    
+    if (!currentUser) {
+        alert('Please log in to follow users');
+        return;
+    }
+    
+    if (userId === currentUser.uid) {
+        return; // Don't show follow button for own posts
+    }
+    
+    const button = event.target.closest('.follow-user-btn');
+    if (!button) return;
+    
+    // Check if social.js is loaded
+    if (typeof window.followUser !== 'function') {
+        alert('Social features not loaded. Please refresh the page.');
+        return;
+    }
+    
+    // Check if already following
+    const isFollowing = button.textContent.includes('Following') || button.classList.contains('following');
+    
+    try {
+        button.disabled = true;
+        button.textContent = isFollowing ? '👥 Unfollowing...' : '👥 Following...';
+        
+        let result;
+        if (isFollowing) {
+            result = await window.unfollowUser(userId);
+        } else {
+            result = await window.followUser(userId);
+        }
+        
+        if (result.success) {
+            if (isFollowing) {
+                button.textContent = '👥 Follow';
+                button.classList.remove('bg-green-600', 'following');
+                button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            } else {
+                button.textContent = '✓ Following';
+                button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                button.classList.add('bg-green-600', 'following');
+            }
+        } else {
+            alert(result.error || 'Failed to follow user');
+            button.textContent = isFollowing ? '✓ Following' : '👥 Follow';
+        }
+    } catch (error) {
+        console.error('Error following user:', error);
+        alert('Error: ' + error.message);
+        button.textContent = isFollowing ? '✓ Following' : '👥 Follow';
+    } finally {
+        button.disabled = false;
+    }
+}
+
+// Make function available globally
+window.handleFollowUser = handleFollowUser;
+
 // Create post HTML
 function createPostHtml(post, postId) {
     const isOwn = currentUser && post.userId === currentUser.uid;
@@ -183,6 +245,14 @@ function createPostHtml(post, postId) {
                             <h3 class="font-semibold text-sm sm:text-base text-gray-100 truncate flex items-center gap-2">
                                 ${escapeHtml(displayName)}
                                 ${isAnonymous ? '<span class="text-xs bg-gray-700 px-2 py-0.5 rounded">🕶️ Anonymous</span>' : ''}
+                                ${!isOwn && !isAnonymous && currentUser && post.userId ? `
+                                    <button class="follow-user-btn text-xs bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded transition" 
+                                            data-user-id="${post.userId}" 
+                                            data-user-name="${escapeHtml(displayName)}"
+                                            onclick="handleFollowUser(event, '${post.userId}', '${escapeHtml(displayName)}')">
+                                        👥 Follow
+                                    </button>
+                                ` : ''}
                             </h3>
                             <p class="text-xs text-gray-500">${formatTime(post.timestamp)}</p>
                         </div>
